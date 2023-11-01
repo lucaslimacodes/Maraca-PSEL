@@ -68,6 +68,16 @@ float normalize(const float &angle)
     return _angle;
 }
 
+void Player::sendPacket(float vx, float vy, float vw){
+    _controlMutex.lock();
+    _controlPacket->setForwardSpeed(vx);
+    _controlPacket->setLeftSpeed(vy);
+    _controlPacket->setAngularSpeed(vw);
+    _controlMutex.unlock();
+
+    emit sendControlPacket(*_controlPacket);
+}
+
 void Player::goTo(const QVector2D &targetPosition)
 {
     QVector2D error = targetPosition - this->getPosition();

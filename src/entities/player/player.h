@@ -106,6 +106,9 @@ protected:
      */
     void rotateTo(const QVector2D &targetPosition);
 
+    //send informations to robot
+    void sendPacket(float vx, float vy, float vw);
+
     /*!
      * \brief Make this Player kick the ball with certain speed.
      * \param kickSpeed The given speed of the kick.

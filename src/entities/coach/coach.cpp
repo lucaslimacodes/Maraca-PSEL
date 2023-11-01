@@ -56,18 +56,7 @@ void Coach::runCoach() {
     // defines).
 
     // Example 1: here we get the ball position and set the BLUE and YELLOW player 0 to follow it
-    QVector2D ballPosition = getWorldMap()->ballPosition();
-    getPlayer(BLUE, 0).value()->goTo(ballPosition);
-    getPlayer(YELLOW, 0).value()->goTo(ballPosition);
 
-    // Example 2: here we set the BLUE and YELLOW players 1 and 2 to rotate to the ball
-    getPlayer(BLUE, 1).value()->rotateTo(ballPosition);
-    getPlayer(BLUE, 2).value()->rotateTo(ballPosition);
-    getPlayer(YELLOW, 1).value()->rotateTo(ballPosition);
-    getPlayer(YELLOW, 2).value()->rotateTo(ballPosition);
+    getPlayer(BLUE, 0).value()->sendPacket(1,0,1);
 
-    getPlayer(BLUE, 3).value()->dribble(true);
-    getPlayer(YELLOW, 3).value()->dribble(true);
-    getPlayer(BLUE, 2).value()->dribble(true);
-    getPlayer(YELLOW, 2).value()->dribble(true);
 }
