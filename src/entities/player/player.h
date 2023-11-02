@@ -37,6 +37,10 @@ static constexpr float LINEAR_KP = 3.0f;
 static constexpr float ANGULAR_KP = 5.0f;
 static constexpr float MAX_SPEED = 2.5f;
 static constexpr float DRIBBLE_SPEED = 50.0f;
+static constexpr int GO_TO_RADIUS = 100;
+static constexpr int TURN_TO_TANGENT = 101;
+static constexpr int START_SPIN = 102;
+static constexpr int ADJUST_RADIUS = 103;
 
 /*!
  * \brief The Player class provides a implementation to manage a robot in the field, providing
@@ -90,6 +94,9 @@ public:
      */
     quint8 getPlayerId() const;
 
+    int getState();
+    void setState(int n);
+
 protected:
     // Mark Coach as a friend class so it can call this methods from Player
     friend class Coach;
@@ -128,6 +135,7 @@ private:
     float _orientation;
     bool _isTeamBlue;
     quint8 _playerId;
+    int state;
 
     // Control management
     RobotControlPacket *_controlPacket;

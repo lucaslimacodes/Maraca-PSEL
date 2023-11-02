@@ -33,6 +33,7 @@ Player::Player(const bool& isTeamBlue, const quint8& playerId)
     _lastError = 0.0f;
     _cumulativeError = 0.0f;
     _controlPacket = new RobotControlPacket(isTeamBlue, playerId, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    state = GO_TO_RADIUS;
 }
 
 bool Player::isMissing() const {
@@ -53,6 +54,14 @@ bool Player::isTeamBlue() const {
 
 quint8 Player::getPlayerId() const {
     return _playerId;
+}
+
+void Player::setState(int n){
+    Player::state = n;
+}
+
+int Player::getState(){
+    return Player::state;
 }
 
 float normalize(const float &angle)

@@ -28,6 +28,7 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap)
     _actuatorTimer = new QTimer(this);
     QObject::connect(_actuatorTimer, &QTimer::timeout, this, &Coach::runCoach);
     _actuatorTimer->start(COACH_ITERATION_INTERVAL_MS);
+    timeCount = 0;
 }
 
 std::optional<Player*> Coach::getPlayer(const bool& isTeamBlue, const quint8& playerId) {
@@ -74,5 +75,57 @@ void Coach::runCoach() {
     tangentUnit = tangentUnit/tangentUnit.length();
     QVector2D nextPosition = getPlayer(BLUE,0).value()->getPosition() + tangentUnit;
     getPlayer(BLUE, 0).value()->goTo(nextPosition);
+
 */
+
+    QVector2D center;
+    center.setX(0);
+    center.setY(0);
+    float radius = 2;
+    float tanSpeed = 2;
+    std::cout << getPlayer(BLUE,0).value()->getState() << "||" << fabs((center - getPlayer(BLUE,0).value()->getPosition()).length()) << '\n';
+    if(getPlayer(BLUE,0).value()->getState() == GO_TO_RADIUS){
+        getPlayer(BLUE,0).value()->rotateTo(center);
+        getPlayer(BLUE,0).value()->goTo(center);
+        if(fabs((center - getPlayer(BLUE,0).value()->getPosition()).length()) <= radius){
+            getPlayer(BLUE,0).value()->setState(ADJUST_RADIUS);
+            getPlayer(BLUE,0).value()->sendPacket(0,0,0);
+
+
+        }
+
+    }
+    else if(getPlayer(BLUE,0).value()->getState() == ADJUST_RADIUS){
+        if(fabs((center - getPlayer(BLUE,0).value()->getPosition()).length()) <= radius){
+            getPlayer(BLUE,0).value()->sendPacket(-0.3,0,0);
+        }
+        else{
+            getPlayer(BLUE,0).value()->setState(TURN_TO_TANGENT);
+            getPlayer(BLUE,0).value()->sendPacket(0,0,0);
+        }
+    }
+    else if(getPlayer(BLUE,0).value()->getState() == TURN_TO_TANGENT){
+        QVector2D playerToCenter;
+        playerToCenter = center - getPlayer(BLUE,0).value()->getPosition();
+        QVector2D tangentUnit;
+        tangentUnit.setY(playerToCenter.x() * -1);
+        tangentUnit.setX(playerToCenter.y());
+        tangentUnit = tangentUnit + getPlayer(BLUE,0).value()->getPosition();
+        getPlayer(BLUE,0).value()->rotateTo(tangentUnit);
+        timeCount++;
+        if(timeCount>=100){
+            getPlayer(BLUE,0).value()->setState(START_SPIN);
+            getPlayer(BLUE,0).value()->sendPacket(0,0,0);
+        }
+
+    }
+    else{
+        getPlayer(BLUE,0).value()->sendPacket(tanSpeed, 0, tanSpeed/radius);
+    }
+
+
+
+
+
+
 }
