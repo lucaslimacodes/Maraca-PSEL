@@ -50,6 +50,7 @@ public:
      */
     Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap);
 
+
 protected:
     /*!
      * \brief Get a Player instance pointer with given parameters.

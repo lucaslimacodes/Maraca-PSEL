@@ -50,13 +50,29 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    // Here you can control the robots freely.
-    // Remember that the getPlayer(color, id) function can return a std::nullopt object, so
-    // be careful when you use it (remember to only use ids from 0-2 and the BLUE and YELLOW
-    // defines).
+    /* /////////FIRST IMPLEMENTATION\\\\\\\\\\\\\\
+    float radius = 0.6; //define radius of turn
+    float tanSpeed = 1.0; // define tangent speed;
+    float angularSpeed = tanSpeed/radius;
 
-    // Example 1: here we get the ball position and set the BLUE and YELLOW player 0 to follow it
+    //Please, mind the 5m/s angular speed limit
+    //spin action only on blue robot with id = 0
+    getPlayer(BLUE, 0).value()->sendPacket(tanSpeed,0,angularSpeed);
+*/
 
-    getPlayer(BLUE, 0).value()->sendPacket(1,0,1);
+    /*////////SECOND IMPLEMENTATION\\\\\\\\
+    QVector2D center;
+    center.setX(0);
+    center.setY(0);
 
+    QVector2D playerToCenter;
+    playerToCenter = center - getPlayer(BLUE,0).value()->getPosition();
+
+    QVector2D tangentUnit;
+    tangentUnit.setY(playerToCenter.x() * -1);
+    tangentUnit.setX(playerToCenter.y());
+    tangentUnit = tangentUnit/tangentUnit.length();
+    QVector2D nextPosition = getPlayer(BLUE,0).value()->getPosition() + tangentUnit;
+    getPlayer(BLUE, 0).value()->goTo(nextPosition);
+*/
 }
