@@ -33,6 +33,8 @@ Player::Player(const bool& isTeamBlue, const quint8& playerId)
     _lastError = 0.0f;
     _cumulativeError = 0.0f;
     _controlPacket = new RobotControlPacket(isTeamBlue, playerId, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    state = WAIT_FOR_BALL;
+    timeCount = 0;
 }
 
 bool Player::isMissing() const {
@@ -55,6 +57,14 @@ quint8 Player::getPlayerId() const {
     return _playerId;
 }
 
+int Player::getState(){
+    return state;
+}
+
+void Player::setState(int n){
+    state = n;
+}
+
 float normalize(const float &angle)
 {
     float _angle = angle;
@@ -66,6 +76,16 @@ float normalize(const float &angle)
     }
 
     return _angle;
+}
+
+void Player::sendPacket(float vx, float vy, float vw){
+    _controlMutex.lock();
+    _controlPacket->setForwardSpeed(vx);
+    _controlPacket->setLeftSpeed(vy);
+    _controlPacket->setAngularSpeed(vw);
+    _controlMutex.unlock();
+
+    emit sendControlPacket(*_controlPacket);
 }
 
 void Player::goTo(const QVector2D &targetPosition)

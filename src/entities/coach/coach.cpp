@@ -28,6 +28,8 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap)
     _actuatorTimer = new QTimer(this);
     QObject::connect(_actuatorTimer, &QTimer::timeout, this, &Coach::runCoach);
     _actuatorTimer->start(COACH_ITERATION_INTERVAL_MS);
+    getPlayer(BLUE,0).value()->setState(GO_TOWARDS_BALL);
+    timeCount = 0;
 }
 
 std::optional<Player*> Coach::getPlayer(const bool& isTeamBlue, const quint8& playerId) {
@@ -50,24 +52,53 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    // Here you can control the robots freely.
-    // Remember that the getPlayer(color, id) function can return a std::nullopt object, so
-    // be careful when you use it (remember to only use ids from 0-2 and the BLUE and YELLOW
-    // defines).
 
-    // Example 1: here we get the ball position and set the BLUE and YELLOW player 0 to follow it
-    QVector2D ballPosition = getWorldMap()->ballPosition();
-    getPlayer(BLUE, 0).value()->goTo(ballPosition);
-    getPlayer(YELLOW, 0).value()->goTo(ballPosition);
+    //ROBOTS USED: BLUE, 0; BLUE, 1; BLUE, 2
 
-    // Example 2: here we set the BLUE and YELLOW players 1 and 2 to rotate to the ball
-    getPlayer(BLUE, 1).value()->rotateTo(ballPosition);
-    getPlayer(BLUE, 2).value()->rotateTo(ballPosition);
-    getPlayer(YELLOW, 1).value()->rotateTo(ballPosition);
-    getPlayer(YELLOW, 2).value()->rotateTo(ballPosition);
+    for(int i=0;i<=2;i++){
+        getPlayer(BLUE,i).value()->dribble(true);
+        if(getPlayer(BLUE,i).value()->getState() == GO_TOWARDS_BALL){
 
-    getPlayer(BLUE, 3).value()->dribble(true);
-    getPlayer(YELLOW, 3).value()->dribble(true);
-    getPlayer(BLUE, 2).value()->dribble(true);
-    getPlayer(YELLOW, 2).value()->dribble(true);
+            getPlayer(BLUE,i).value()->goTo(getWorldMap()->ballPosition());
+            getPlayer(BLUE,i).value()->rotateTo(getWorldMap()->ballPosition());
+            if(fabs((getWorldMap()->ballPosition() - getPlayer(BLUE,i).value()->getPosition()).length()) <= 0.15){
+                getPlayer(BLUE,i).value()->setState(SPIN_WITH_BALL);
+                getPlayer(BLUE,i).value()->sendPacket(0,0,0);
+            }
+
+        }
+        if(getPlayer(BLUE,i).value()->getState() == SPIN_WITH_BALL){
+            if(i!=2){
+                getPlayer(BLUE,i).value()->rotateTo(getPlayer(BLUE,i+1).value()->getPosition());
+            }
+            else {
+                getPlayer(BLUE,i).value()->rotateTo(getWorldMap()->ourGoalCenter());
+            }
+            getPlayer(BLUE,i).value()->timeCount = getPlayer(BLUE,i).value()->timeCount + 1;
+            if(getPlayer(BLUE,i).value()->timeCount >= 100){
+                getPlayer(BLUE,i).value()->setState(KICK_BALL);
+                getPlayer(BLUE,i).value()->sendPacket(0,0,0);
+
+            }
+
+        }
+        if(getPlayer(BLUE,i).value()->getState() == KICK_BALL){
+            getPlayer(BLUE,i).value()->kick(5,false);
+            getPlayer(BLUE,i).value()->setState(0);
+            getPlayer(BLUE,i).value()->sendPacket(0,0,0);
+        }
+        if(getPlayer(BLUE,i).value()->getState() == WAIT_FOR_BALL){
+            getPlayer(BLUE,i).value()->rotateTo(getWorldMap()->ballPosition());
+            if(fabs((getWorldMap()->ballPosition() - getPlayer(BLUE,i).value()->getPosition()).length()) <= 0.15){
+                getPlayer(BLUE,i).value()->setState(SPIN_WITH_BALL);
+                getPlayer(BLUE,i).value()->sendPacket(0,0,0);
+            }
+        }
+        if(getPlayer(BLUE,i).value()->getState() == 0){
+            getPlayer(BLUE,i).value()->sendPacket(0,0,0);
+            getPlayer(BLUE,i).value()->kick(0,false);
+        }
+    }
+
+
 }

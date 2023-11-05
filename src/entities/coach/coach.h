@@ -29,7 +29,7 @@
 
 #include <src/entities/player/player.h>
 #include <src/entities/worldmap/worldmap.h>
-
+#include <cmath>
 #include <spdlog/spdlog.h>
 
 #define COACH_ITERATION_INTERVAL_MS 16
@@ -43,6 +43,7 @@ class Coach : public QObject
 {
     Q_OBJECT
 public:
+    int timeCount;
     /*!
      * \brief Coach class constructor. It receives a list of the registered players.
      * \param players The given list of registered players.

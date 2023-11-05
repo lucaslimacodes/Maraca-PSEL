@@ -37,6 +37,10 @@ static constexpr float LINEAR_KP = 3.0f;
 static constexpr float ANGULAR_KP = 5.0f;
 static constexpr float MAX_SPEED = 2.5f;
 static constexpr float DRIBBLE_SPEED = 50.0f;
+static constexpr int GO_TOWARDS_BALL = 100;
+static constexpr int SPIN_WITH_BALL = 101;
+static constexpr int KICK_BALL = 102;
+static constexpr int WAIT_FOR_BALL = 103;
 
 /*!
  * \brief The Player class provides a implementation to manage a robot in the field, providing
@@ -46,6 +50,7 @@ class Player : public QObject
 {
     Q_OBJECT
 public:
+    int timeCount;
     /*!
      * \brief Player class constructor.
      * \param isTeamBlue If this player belongs to the team blue.
@@ -90,6 +95,10 @@ public:
      */
     quint8 getPlayerId() const;
 
+    int getState();
+
+    void setState(int n);
+
 protected:
     // Mark Coach as a friend class so it can call this methods from Player
     friend class Coach;
@@ -119,12 +128,16 @@ protected:
      */
     void dribble(const bool enable);
 
+    void sendPacket(float vx, float vy, float vw);
+
+
 private:
     // Player internal variables
     QVector2D _position;
     float _orientation;
     bool _isTeamBlue;
     quint8 _playerId;
+    int state;
 
     // Control management
     RobotControlPacket *_controlPacket;
