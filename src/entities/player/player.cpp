@@ -33,6 +33,7 @@ Player::Player(const bool& isTeamBlue, const quint8& playerId)
     _lastError = 0.0f;
     _cumulativeError = 0.0f;
     _controlPacket = new RobotControlPacket(isTeamBlue, playerId, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+    state = 0;
 }
 
 bool Player::isMissing() const {
@@ -101,6 +102,17 @@ void Player::goTo(const QVector2D &targetPosition)
     _controlMutex.unlock();
 
     emit sendControlPacket(*_controlPacket);
+}
+
+void Player::sendPacket(float vx, float vy, float vw){
+    _controlMutex.lock();
+    _controlPacket->setForwardSpeed(vx);
+    _controlPacket->setLeftSpeed(vy);
+    _controlPacket->setAngularSpeed(vw);
+    _controlMutex.unlock();
+
+    emit sendControlPacket(*_controlPacket);
+
 }
 
 void Player::rotateTo(const QVector2D &targetPosition)

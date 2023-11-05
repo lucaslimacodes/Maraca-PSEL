@@ -28,6 +28,43 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap)
     _actuatorTimer = new QTimer(this);
     QObject::connect(_actuatorTimer, &QTimer::timeout, this, &Coach::runCoach);
     _actuatorTimer->start(COACH_ITERATION_INTERVAL_MS);
+    before.resize(5);
+    before = {{0,0},{0,0},{0,0},{0,0},{0,0}}; // pos, vel, accel, ...
+    now.resize(5);
+    now = {{0,0},{0,0},{0,0},{0,0},{0,0}};
+
+
+
+
+}
+
+void Coach::printData(){
+    std::cout << "+--------------------------------------------------------------+" << '\n';
+    std::cout << "position: " << "(" << now[0].x() << "," << now[0].y() << ")" << '\n';
+    std::cout << "velocity: " << "(" << now[1].x() << "," << now[1].y() << ")" << '\n';
+    std::cout << "acceleration: " << "(" << now[2].x() << "," << now[2].y() << ")" << '\n';
+    std::cout << "da/dt: " << "(" << now[3].x() << "," << now[3].y() << ")" << '\n';
+    std::cout << "d²a/dt²: " << "(" << now[4].x() << "," << now[4].y() << ")" << '\n';
+    std::cout << "+--------------------------------------------------------------+" << '\n';
+}
+void Coach::updateDataBall(){
+    now[0] = getWorldMap()->ballPosition();
+    for(int i=1;i<=4;i++){
+        now[i] = (now[i-1] - before[i-1])/double(1.0/60.0);
+
+    }
+    printData();
+    for(int i=0;i<=4;i++){
+        before[i] = now[i];
+    }
+
+}
+
+QVector2D Coach::getBallVelocity(){
+    return now[1];
+}
+QVector2D Coach::getBallAcceleration(){
+    return now[2];
 }
 
 std::optional<Player*> Coach::getPlayer(const bool& isTeamBlue, const quint8& playerId) {
@@ -50,24 +87,6 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    // Here you can control the robots freely.
-    // Remember that the getPlayer(color, id) function can return a std::nullopt object, so
-    // be careful when you use it (remember to only use ids from 0-2 and the BLUE and YELLOW
-    // defines).
-
-    // Example 1: here we get the ball position and set the BLUE and YELLOW player 0 to follow it
-    QVector2D ballPosition = getWorldMap()->ballPosition();
-    getPlayer(BLUE, 0).value()->goTo(ballPosition);
-    getPlayer(YELLOW, 0).value()->goTo(ballPosition);
-
-    // Example 2: here we set the BLUE and YELLOW players 1 and 2 to rotate to the ball
-    getPlayer(BLUE, 1).value()->rotateTo(ballPosition);
-    getPlayer(BLUE, 2).value()->rotateTo(ballPosition);
-    getPlayer(YELLOW, 1).value()->rotateTo(ballPosition);
-    getPlayer(YELLOW, 2).value()->rotateTo(ballPosition);
-
-    getPlayer(BLUE, 3).value()->dribble(true);
-    getPlayer(YELLOW, 3).value()->dribble(true);
-    getPlayer(BLUE, 2).value()->dribble(true);
-    getPlayer(YELLOW, 2).value()->dribble(true);
+    updateDataBall(); //MANDATORY
+    std::cout << "ball velocity: (" << getBallVelocity().x()  <<"," << getBallVelocity().y() << ")" <<  '\n';
 }

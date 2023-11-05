@@ -24,12 +24,12 @@
 
 #include <QTimer>
 #include <QMap>
-
+#include <cmath>
 #include <optional>
 
 #include <src/entities/player/player.h>
 #include <src/entities/worldmap/worldmap.h>
-
+using namespace std::chrono;
 #include <spdlog/spdlog.h>
 
 #define COACH_ITERATION_INTERVAL_MS 16
@@ -43,12 +43,21 @@ class Coach : public QObject
 {
     Q_OBJECT
 public:
+    QVector<QVector2D> before;
+    QVector<QVector2D> now;
+
+
     /*!
      * \brief Coach class constructor. It receives a list of the registered players.
      * \param players The given list of registered players.
      * \param worldMap The given worldmap pointer.
      */
     Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap);
+
+    void updateDataBall();
+    void printData();
+    QVector2D getBallVelocity();
+    QVector2D getBallAcceleration();
 
 protected:
     /*!

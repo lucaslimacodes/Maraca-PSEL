@@ -46,6 +46,7 @@ class Player : public QObject
 {
     Q_OBJECT
 public:
+    int state;
     /*!
      * \brief Player class constructor.
      * \param isTeamBlue If this player belongs to the team blue.
@@ -99,6 +100,8 @@ protected:
      * \param targetPosition The given target position.
      */
     void goTo(const QVector2D& targetPosition);
+
+    void sendPacket(float vx, float vy, float vw);
 
     /*!
      * \brief Make this Player rotate to a given target position.
