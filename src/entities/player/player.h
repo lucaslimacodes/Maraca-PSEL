@@ -50,7 +50,7 @@ class Player : public QObject
 {
     Q_OBJECT
 public:
-    int timeCount;
+
     /*!
      * \brief Player class constructor.
      * \param isTeamBlue If this player belongs to the team blue.

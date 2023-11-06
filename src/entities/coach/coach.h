@@ -43,7 +43,6 @@ class Coach : public QObject
 {
     Q_OBJECT
 public:
-    int timeCount;
     /*!
      * \brief Coach class constructor. It receives a list of the registered players.
      * \param players The given list of registered players.

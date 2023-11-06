@@ -34,7 +34,6 @@ Player::Player(const bool& isTeamBlue, const quint8& playerId)
     _cumulativeError = 0.0f;
     _controlPacket = new RobotControlPacket(isTeamBlue, playerId, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     state = WAIT_FOR_BALL;
-    timeCount = 0;
 }
 
 bool Player::isMissing() const {

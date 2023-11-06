@@ -29,7 +29,6 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap)
     QObject::connect(_actuatorTimer, &QTimer::timeout, this, &Coach::runCoach);
     _actuatorTimer->start(COACH_ITERATION_INTERVAL_MS);
     getPlayer(BLUE,0).value()->setState(GO_TOWARDS_BALL);
-    timeCount = 0;
 }
 
 std::optional<Player*> Coach::getPlayer(const bool& isTeamBlue, const quint8& playerId) {
@@ -74,8 +73,8 @@ void Coach::runCoach() {
             else {
                 getPlayer(BLUE,i).value()->rotateTo(getWorldMap()->ourGoalCenter());
             }
-            getPlayer(BLUE,i).value()->timeCount = getPlayer(BLUE,i).value()->timeCount + 1;
-            if(getPlayer(BLUE,i).value()->timeCount >= 100){
+            double targetOrientaion = (i != 2) ? atan2(getPlayer(BLUE,i+1).value()->getPosition().y() - getPlayer(BLUE,i).value()->getPosition().y(), getPlayer(BLUE,i+1).value()->getPosition().x() - getPlayer(BLUE,i).value()->getPosition().x()) : atan2(getWorldMap()->ourGoalCenter().y() - getPlayer(BLUE,i).value()->getPosition().y(), getWorldMap()->ourGoalCenter().x()  - getPlayer(BLUE,i).value()->getPosition().x());
+            if(fabs(getPlayer(BLUE,i).value()->_orientation - targetOrientaion) <= 0.001){
                 getPlayer(BLUE,i).value()->setState(KICK_BALL);
                 getPlayer(BLUE,i).value()->sendPacket(0,0,0);
 
