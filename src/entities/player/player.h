@@ -91,6 +91,7 @@ public:
      */
     quint8 getPlayerId() const;
     QVector2D *fieldSpeedToReferencial(float F_vx, float F_vy);
+    QVector2D *anySpeedToReferencia(float ANY_vx, float ANY_vy, float xAxisAngle);
 
 protected:
     // Mark Coach as a friend class so it can call this methods from Player

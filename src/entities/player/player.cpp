@@ -120,6 +120,14 @@ QVector2D *Player::fieldSpeedToReferencial(float F_vx, float F_vy){
     vetor->setY(F_vy*cos(this->getOrientation()) - F_vx*sin(this->getOrientation()));
     return vetor;
 }
+QVector2D *Player::anySpeedToReferencia(float ANY_vx, float ANY_vy, float xAxisAngle){
+    QVector2D *vetor = new QVector2D();
+    vetor->setX(ANY_vy*sin(this->getOrientation() - xAxisAngle) + ANY_vx*cos(this->getOrientation() - xAxisAngle));
+    vetor->setY(ANY_vy*cos(this->getOrientation() - xAxisAngle) - ANY_vx*sin(this->getOrientation() - xAxisAngle));
+    return vetor;
+
+
+}
 
 void Player::rotateTo(const QVector2D &targetPosition)
 {

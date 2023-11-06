@@ -86,9 +86,8 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    QVector2D *vetor = getPlayer(BLUE,0).value()->fieldSpeedToReferencial(1,0);
+    QVector2D *vetor = getPlayer(BLUE,0).value()->anySpeedToReferencia(1,0,M_PI/4);
     getPlayer(BLUE,0).value()->sendPacket(vetor->x(),vetor->y());
-    getPlayer(BLUE,0).value()->rotateTo({0,0});
     delete vetor;
 
 }
