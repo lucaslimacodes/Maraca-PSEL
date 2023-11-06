@@ -32,7 +32,7 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap)
     before = {{0,0},{0,0},{0,0},{0,0},{0,0}}; // pos, vel, accel, ...
     now.resize(5);
     now = {{0,0},{0,0},{0,0},{0,0},{0,0}};
-
+    frameCounter = 0;
 
 
 
@@ -50,10 +50,9 @@ void Coach::printData(){
 void Coach::updateDataBall(){
     now[0] = getWorldMap()->ballPosition();
     for(int i=1;i<=4;i++){
-        now[i] = (now[i-1] - before[i-1])/double(1.0/60.0);
+        now[i] = (now[i-1] - before[i-1]) * 60;
 
     }
-    printData();
     for(int i=0;i<=4;i++){
         before[i] = now[i];
     }
@@ -87,6 +86,9 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    updateDataBall(); //MANDATORY
-    std::cout << "ball velocity: (" << getBallVelocity().x()  <<"," << getBallVelocity().y() << ")" <<  '\n';
+    QVector2D *vetor = getPlayer(BLUE,0).value()->fieldSpeedToReferencial(1,0);
+    getPlayer(BLUE,0).value()->sendPacket(vetor->x(),vetor->y());
+    getPlayer(BLUE,0).value()->rotateTo({0,0});
+    delete vetor;
+
 }

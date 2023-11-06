@@ -104,15 +104,21 @@ void Player::goTo(const QVector2D &targetPosition)
     emit sendControlPacket(*_controlPacket);
 }
 
-void Player::sendPacket(float vx, float vy, float vw){
+void Player::sendPacket(float vx, float vy){
     _controlMutex.lock();
     _controlPacket->setForwardSpeed(vx);
     _controlPacket->setLeftSpeed(vy);
-    _controlPacket->setAngularSpeed(vw);
     _controlMutex.unlock();
 
     emit sendControlPacket(*_controlPacket);
 
+}
+QVector2D *Player::fieldSpeedToReferencial(float F_vx, float F_vy){
+
+    QVector2D *vetor = new QVector2D();
+    vetor->setX(F_vy*sin(this->getOrientation()) + F_vx*cos(this->getOrientation()));
+    vetor->setY(F_vy*cos(this->getOrientation()) - F_vx*sin(this->getOrientation()));
+    return vetor;
 }
 
 void Player::rotateTo(const QVector2D &targetPosition)

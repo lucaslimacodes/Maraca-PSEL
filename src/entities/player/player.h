@@ -90,6 +90,7 @@ public:
      * \return This Player instance id.
      */
     quint8 getPlayerId() const;
+    QVector2D *fieldSpeedToReferencial(float F_vx, float F_vy);
 
 protected:
     // Mark Coach as a friend class so it can call this methods from Player
@@ -101,7 +102,7 @@ protected:
      */
     void goTo(const QVector2D& targetPosition);
 
-    void sendPacket(float vx, float vy, float vw);
+    void sendPacket(float vx, float vy);
 
     /*!
      * \brief Make this Player rotate to a given target position.

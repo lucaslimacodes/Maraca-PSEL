@@ -45,6 +45,7 @@ class Coach : public QObject
 public:
     QVector<QVector2D> before;
     QVector<QVector2D> now;
+    int frameCounter;
 
 
     /*!
@@ -58,6 +59,7 @@ public:
     void printData();
     QVector2D getBallVelocity();
     QVector2D getBallAcceleration();
+
 
 protected:
     /*!
