@@ -86,8 +86,17 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    QVector2D *vetor = getPlayer(BLUE,0).value()->anySpeedToReferencia(1,0,M_PI/4);
-    getPlayer(BLUE,0).value()->sendPacket(vetor->x(),vetor->y());
-    delete vetor;
-
+    updateDataBall();
+    Player *p = getPlayer(BLUE,0).value();
+    p->dribble(true);
+    float k = 0.45;
+    QVector2D desiredPosition = getWorldMap()->ballPosition() + getBallVelocity() * fabs((getWorldMap()->ballPosition() - p->getPosition()).length()) * k;
+    p->goTo(desiredPosition);
+    p->rotateTo(getWorldMap()->ballPosition());
+    getPlayer(BLUE,1).value()->dribble(true);
+    getPlayer(BLUE,1).value()->kick(6,0);
+    std::cout << frameCounter << '\n';
+    if(fabs((getWorldMap()->ballPosition() - p->getPosition()).length()) >=0.18){
+        frameCounter++;
+    }
 }
