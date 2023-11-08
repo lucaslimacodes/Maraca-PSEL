@@ -69,7 +69,7 @@ float normalize(const float &angle)
     return _angle;
 }
 
-void Player::goTo(const QVector2D &targetPosition)
+void Player::goTo(const QVector2D &targetPosition, bool noBreak)
 {
     QVector2D error = targetPosition - this->getPosition();
     QVector2D desiredVelocity = error * LINEAR_KP;
@@ -93,6 +93,9 @@ void Player::goTo(const QVector2D &targetPosition)
                             desiredVelocity.length() * cos(angleY));
 
     if (decomposedVel.length() > MAX_SPEED) {
+        decomposedVel = decomposedVel.normalized() * MAX_SPEED;
+    }
+    if(decomposedVel.length() < MAX_SPEED && noBreak == true){
         decomposedVel = decomposedVel.normalized() * MAX_SPEED;
     }
 

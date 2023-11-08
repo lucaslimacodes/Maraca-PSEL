@@ -101,7 +101,7 @@ protected:
      * \brief Make this Player go to a given target position.
      * \param targetPosition The given target position.
      */
-    void goTo(const QVector2D& targetPosition);
+    void goTo(const QVector2D& targetPosition, bool noBreak);
 
     void sendPacket(float vx, float vy);
 

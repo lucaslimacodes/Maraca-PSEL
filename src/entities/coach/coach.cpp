@@ -90,12 +90,21 @@ void Coach::runCoach() {
     Player *p = getPlayer(BLUE,0).value();
     p->dribble(true);
     float k = 0.45;
-    QVector2D desiredPosition = getWorldMap()->ballPosition() + getBallVelocity() * fabs((getWorldMap()->ballPosition() - p->getPosition()).length()) * k;
-    p->goTo(desiredPosition);
+    float diagonalDist;
+    bool noBreak = true;
+    QVector2D ballToPlayer = p->getPosition() - getWorldMap()->ballPosition();
+    float angle = atan2(getBallVelocity().y(),getBallVelocity().x()) - atan2(ballToPlayer.y(),ballToPlayer.x());
+    if(angle > M_PI) angle = angle - 2*M_PI;
+    else if(angle < -M_PI) angle = angle + 2*M_PI;
+    diagonalDist = fabs(ballToPlayer.length())*sin(angle);
+    QVector2D desiredPosition = getWorldMap()->ballPosition() + getBallVelocity() * fabs(diagonalDist) * k;
+    if(fabs((p->getPosition() - getWorldMap()->ballPosition()).length()) <= 0.20) noBreak = false;
+    p->goTo(desiredPosition,true);
     p->rotateTo(getWorldMap()->ballPosition());
-    getPlayer(BLUE,1).value()->dribble(true);
-    getPlayer(BLUE,1).value()->kick(6,0);
-    std::cout << frameCounter << '\n';
+    getPlayer(YELLOW,1).value()->goTo(getWorldMap()->ballPosition(), false);
+    getPlayer(YELLOW,1).value()->dribble(true);
+    getPlayer(YELLOW,1).value()->kick(7,0);
+    std::cout << noBreak << '\n';
     if(fabs((getWorldMap()->ballPosition() - p->getPosition()).length()) >=0.18){
         frameCounter++;
     }
