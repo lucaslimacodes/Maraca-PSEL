@@ -33,9 +33,18 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool
     now.resize(5);
     now = {{0,0},{0,0},{0,0},{0,0},{0,0}};
     this->teamColor = teamColor;
+    this->ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()});
+    this->db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()});
+    this->gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()});
 
 
+}
 
+Coach::~Coach(){
+    //deleting all behavior instances
+    delete ab;
+    delete db;
+    delete gb;
 }
 
 void Coach::printData(){
@@ -88,11 +97,6 @@ WorldMap* Coach::getWorldMap() {
 
 void Coach::runCoach() {
     updateDataBall(); //MANDATORY
-    // all behavior instances
-    att_behavior *ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()});
-    def_behavior *db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()});
-    gk_behavior *gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()});
-
 
 
 

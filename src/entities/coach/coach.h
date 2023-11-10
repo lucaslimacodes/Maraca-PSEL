@@ -49,6 +49,9 @@ public:
     QVector<QVector2D> before;
     QVector<QVector2D> now;
     bool teamColor;
+    att_behavior *ab;
+    def_behavior *db;
+    gk_behavior *gb;
 
 
     /*!
@@ -57,6 +60,7 @@ public:
      * \param worldMap The given worldmap pointer.
      */
     Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool teamColor);
+    ~Coach();
 
     void updateDataBall();
     void printData();
