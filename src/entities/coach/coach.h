@@ -29,6 +29,9 @@
 
 #include <src/entities/player/player.h>
 #include <src/entities/worldmap/worldmap.h>
+#include <src/entities/player/behavior/att_behavior/att_behavior.h>
+#include <src/entities/player/behavior/def_behavior/def_behavior.h>
+#include <src/entities/player/behavior/gk_behavior/gk_behavior.h>
 using namespace std::chrono;
 #include <spdlog/spdlog.h>
 
@@ -45,6 +48,7 @@ class Coach : public QObject
 public:
     QVector<QVector2D> before;
     QVector<QVector2D> now;
+    bool teamColor;
 
 
     /*!
@@ -52,7 +56,7 @@ public:
      * \param players The given list of registered players.
      * \param worldMap The given worldmap pointer.
      */
-    Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap);
+    Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool teamColor);
 
     void updateDataBall();
     void printData();

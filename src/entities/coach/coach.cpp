@@ -21,7 +21,7 @@
 
 #include "coach.h"
 
-Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap)
+Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool teamColor)
     : _players(players), _worldMap(worldMap)
 {
     // Create QTimer and connects to the runCoach() slot
@@ -32,7 +32,7 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap)
     before = {{0,0},{0,0},{0,0},{0,0},{0,0}}; // pos, vel, accel, ...
     now.resize(5);
     now = {{0,0},{0,0},{0,0},{0,0},{0,0}};
-
+    this->teamColor = teamColor;
 
 
 
@@ -88,5 +88,17 @@ WorldMap* Coach::getWorldMap() {
 
 void Coach::runCoach() {
     updateDataBall(); //MANDATORY
-    std::cout << "ball velocity: (" << getBallVelocity().x()  <<"," << getBallVelocity().y() << ")" <<  '\n';
+    // all behavior instances
+    att_behavior *ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()});
+    def_behavior *db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()});
+    gk_behavior *gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()});
+
+
+
+
+    //all behavior running
+    ab->run();
+    db->run();
+    gb->run();
+
 }

@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 
     // Create WorldMap instance and connect it with the Vision module to receive detection packets
     // from ball and field.
-    WorldMap *worldMap = new WorldMap(false);
+    WorldMap *worldMap = new WorldMap(true); //CHANGE THIS SETTING TO ADAPT TO EACH SIDE OF FIELD
     QObject::connect(vision, &Vision::sendFieldDetection, worldMap, &WorldMap::updateFieldDetection);
     QObject::connect(vision, &Vision::sendBallDetection, worldMap, &WorldMap::updateBallDetection);
 
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     }
 
     // Create Coach module instance and allocate players and worldmap to it.
-    Coach* coach = new Coach(_players, worldMap);
+    Coach* coach = new Coach(_players, worldMap, true); //BLUE: true, YELLOW: FALSE; CHANGE THIS SETTING TO ADAPT TO EACH SIDE OF FIELD
 
     // Hold exec
     bool exec = a.exec();
