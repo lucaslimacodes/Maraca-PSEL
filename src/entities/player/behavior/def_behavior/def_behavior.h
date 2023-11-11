@@ -6,7 +6,7 @@
 class def_behavior : public behavior
 {
 public:
-   def_behavior(WorldMap *map, QVector<Player *> players);
+   def_behavior(WorldMap *map, QVector<Player *> players, bool ourTean);
     void run();
 
 };

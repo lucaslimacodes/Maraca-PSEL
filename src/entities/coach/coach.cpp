@@ -33,9 +33,9 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool
     now.resize(5);
     now = {{0,0},{0,0},{0,0},{0,0},{0,0}};
     this->teamColor = teamColor;
-    this->ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()});
-    this->db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()});
-    this->gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()});
+    this->ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()}, this->teamColor);
+    this->db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()}, this->teamColor);
+    this->gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()}, this->teamColor);
 
 
 }
@@ -96,7 +96,7 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    updateDataBall(); //MANDATORY
+     //MANDATORY
 
 
 

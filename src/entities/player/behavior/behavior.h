@@ -6,6 +6,7 @@
 #include <QVector2D>
 #include <src/entities/player/player.h>
 #include <src/entities/worldmap/worldmap.h>
+#include <cmath>
 #define ENEMY 100
 #define ALLY 101
 #define CONFLICT 102

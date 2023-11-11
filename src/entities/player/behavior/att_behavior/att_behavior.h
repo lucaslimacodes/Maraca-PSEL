@@ -5,7 +5,7 @@
 class att_behavior : public behavior
 {
 public:
-    att_behavior(WorldMap *map, QVector<Player *> players);
+    att_behavior(WorldMap *map, QVector<Player *> players, bool ourTeam);
     void run();
 };
 

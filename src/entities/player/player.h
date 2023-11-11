@@ -94,6 +94,9 @@ public:
 protected:
     // Mark Coach as a friend class so it can call this methods from Player
     friend class Coach;
+    friend class gk_behavior;
+    friend class def_behavior;
+    friend class att_behavior;
 
     /*!
      * \brief Make this Player go to a given target position.
