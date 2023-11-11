@@ -20,10 +20,28 @@ void gk_behavior::pointAtBall(){
     if(ourTeamColor == BLUE){
         double y = a*x1;
         target = getGoalCircleCenter() + QVector2D(x1,y);
+        if((map->ballPosition() - getGoalCircleCenter()).x() <= 0.0){
+            if((map->ballPosition() - getGoalCircleCenter()).y() > 0){
+                target = getGoalCircleCenter() + QVector2D(0,GOAL_RADIUS);
+            }
+            else{
+                target = getGoalCircleCenter() - QVector2D(0,GOAL_RADIUS);
+            }
+        }
     }
     else{
         double y = a*x2;
         target = getGoalCircleCenter() + QVector2D(x2,y);
+        if((map->ballPosition() - getGoalCircleCenter()).x() >= 0.0){
+            if((map->ballPosition() - getGoalCircleCenter()).y() > 0){
+                target = getGoalCircleCenter() + QVector2D(0,GOAL_RADIUS);
+            }
+            else{
+                target = getGoalCircleCenter() - QVector2D(0,GOAL_RADIUS);
+            }
+        }
+
+
     }
     players[0]->goTo(target);
 
