@@ -12,10 +12,12 @@
 class gk_behavior : public behavior
 {
 public:
-    int state;
     gk_behavior(WorldMap *map, QVector<Player *> players, bool ourTeam);
+    bool willBallHitGoal();
     void pointAtBall();
+    void predictBall();
     void run();
+
     QVector2D getGoalCircleCenter();
 
 };

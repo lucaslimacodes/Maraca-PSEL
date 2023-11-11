@@ -20,9 +20,13 @@ class behavior : public QObject
 public:
     WorldMap *map;
     QVector<Player *> players; //players that are going to behave in this strategy
+    QVector<QVector<QVector<QVector2D>>> PlayersData;
+    QVector<QVector2D> ballData;
     int ballPoss;
     int teamStrategy;
     int ourTeamColor;
+    int state;
+    QVector2D getBallSpeed();
 
 };
 

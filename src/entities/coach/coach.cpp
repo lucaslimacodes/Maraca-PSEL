@@ -28,15 +28,32 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool
     _actuatorTimer = new QTimer(this);
     QObject::connect(_actuatorTimer, &QTimer::timeout, this, &Coach::runCoach);
     _actuatorTimer->start(COACH_ITERATION_INTERVAL_MS);
-    before.resize(5);
-    before = {{0,0},{0,0},{0,0},{0,0},{0,0}}; // pos, vel, accel, ...
-    now.resize(5);
-    now = {{0,0},{0,0},{0,0},{0,0},{0,0}};
     this->teamColor = teamColor;
     this->ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()}, this->teamColor);
     this->db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()}, this->teamColor);
     this->gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()}, this->teamColor);
-
+    now.resize(2);
+    for(int i=0;i<2;i++){
+        now[i].resize(6);
+        for(int j=0;j<6;j++){
+            now[i][j].resize(3);
+            now[i][j] = {{0,0} , {0,0} , {0,0}};
+        }
+    }
+    before.resize(2);
+    for(int i=0;i<2;i++){
+        before[i].resize(6);
+        for(int j=0;j<6;j++){
+            before[i][j].resize(3);
+            before[i][j] = {{0,0} , {0,0} , {0,0}};
+        }
+    }
+    before_ball.resize(3);
+    before_ball = {{0,0} , {0,0} , {0,0}};
+    now_ball.resize(3);
+    now_ball = {{0,0} , {0,0} , {0,0}};
+    state_test = 0;
+    frameCounter_test = 0;
 
 }
 
@@ -47,33 +64,41 @@ Coach::~Coach(){
     delete gb;
 }
 
-void Coach::printData(){
-    std::cout << "+--------------------------------------------------------------+" << '\n';
-    std::cout << "position: " << "(" << now[0].x() << "," << now[0].y() << ")" << '\n';
-    std::cout << "velocity: " << "(" << now[1].x() << "," << now[1].y() << ")" << '\n';
-    std::cout << "acceleration: " << "(" << now[2].x() << "," << now[2].y() << ")" << '\n';
-    std::cout << "da/dt: " << "(" << now[3].x() << "," << now[3].y() << ")" << '\n';
-    std::cout << "d²a/dt²: " << "(" << now[4].x() << "," << now[4].y() << ")" << '\n';
-    std::cout << "+--------------------------------------------------------------+" << '\n';
-}
-void Coach::updateDataBall(){
-    now[0] = getWorldMap()->ballPosition();
-    for(int i=1;i<=4;i++){
-        now[i] = (now[i-1] - before[i-1])/double(1.0/60.0);
+
+void Coach::updateData(){
+
+    now_ball[0] = getWorldMap()->ballPosition();
+    for(int i=1;i<=2;i++){
+        now_ball[i] = (now_ball[i-1] - before_ball[i-1])/double(1.0/60.0);
 
     }
-    printData();
-    for(int i=0;i<=4;i++){
-        before[i] = now[i];
+    for(int i=0;i<=2;i++){
+        before_ball[i] = now_ball[i];
     }
 
+    for(int i=0;i<2;i++){ // 0 = yellow , 1 = blue
+        for(int j=0;j<6;j++){
+            now[i][j][0] = (i==0) ? getPlayer(YELLOW,j).value()->getPosition() : getPlayer(BLUE,j).value()->getPosition();
+            for(int k=1;k<=2;k++){
+                now[i][j][k] = (now[i][j][k-1] - before[i][j][k-1]) * 60.0;
+            }
+            for(int k=0;k<=2;k++){
+                before[i][j][k] = now[i][j][k];
+            }
+        }
+    }
+
+
 }
 
-QVector2D Coach::getBallVelocity(){
-    return now[1];
-}
-QVector2D Coach::getBallAcceleration(){
-    return now[2];
+void Coach::updateDataToBehaviors(){
+    updateData();
+    //this->gb->PlayersData = now;
+    this->gb->ballData = now_ball;
+    //this->db->PlayersData = now;
+    this->db->ballData = now_ball;
+    //this->ab->PlayersData= now;
+    this->ab->ballData = now_ball;
 }
 
 std::optional<Player*> Coach::getPlayer(const bool& isTeamBlue, const quint8& playerId) {
@@ -96,8 +121,18 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-     //MANDATORY
-
+    updateDataToBehaviors(); //MANDATORY
+    getPlayer(!teamColor,1).value()->dribble(true);
+    if(state_test == 0){
+        getPlayer(!teamColor, 1).value()->rotateTo(getWorldMap()->ourGoalRightPost() + QVector2D(0,0.05));
+        frameCounter_test++;
+        if(frameCounter_test >= 120){
+            state_test = 1;
+        }
+    }
+    if(state_test == 1){
+        getPlayer(!teamColor, 1).value()->kick(6,false);
+    }
 
 
     //all behavior running

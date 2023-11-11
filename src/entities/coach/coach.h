@@ -46,12 +46,16 @@ class Coach : public QObject
 {
     Q_OBJECT
 public:
-    QVector<QVector2D> before;
-    QVector<QVector2D> now;
+    QVector<QVector<QVector<QVector2D>>> before;
+    QVector<QVector<QVector<QVector2D>>> now;
+    QVector<QVector2D> before_ball;
+    QVector<QVector2D> now_ball;
     bool teamColor;
     att_behavior *ab;
     def_behavior *db;
     gk_behavior *gb;
+    int state_test;
+    int frameCounter_test;
 
 
     /*!
@@ -62,10 +66,11 @@ public:
     Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool teamColor);
     ~Coach();
 
-    void updateDataBall();
-    void printData();
+    void updateData();
+
     QVector2D getBallVelocity();
     QVector2D getBallAcceleration();
+    void updateDataToBehaviors();
 
 protected:
     /*!
@@ -96,6 +101,7 @@ private slots:
      * \note This method should be called/connected with the QTimer timeout signal.
      */
     void runCoach();
+
 };
 
 #endif // COACH_H
