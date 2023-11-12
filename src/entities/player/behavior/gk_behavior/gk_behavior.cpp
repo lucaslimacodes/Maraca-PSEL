@@ -5,6 +5,7 @@ gk_behavior::gk_behavior(WorldMap *map, QVector<Player *> players, bool ourTeam)
     this->players = players;
     this->ourTeamColor = ourTeam;
     this->state = POINTING_AT_BALL;
+    this->receiver = NULL;
 
 }
 QVector2D gk_behavior::getGoalCircleCenter(){
@@ -118,6 +119,8 @@ void gk_behavior::predictBall(){
 }
 
 void gk_behavior::run(){
+    updateReceiver(); //MANDATORY
+    updateBallPoss(); //MANDATORY
     players[0]->dribble(true);
     if(state == POINTING_AT_BALL){
         pointAtBall();

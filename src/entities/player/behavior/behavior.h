@@ -26,8 +26,12 @@ public:
     int teamStrategy;
     int ourTeamColor;
     int state;
+    Player *receiver; //ally player that is going to receive a pass
     QVector2D getBallSpeed();
-
+    void updateBallPoss();
+    bool anyEnemyNextToBall();
+    bool anyAllyNextToBall();
+    void updateReceiver();
 };
 
 #endif // BEHAVIOR_H

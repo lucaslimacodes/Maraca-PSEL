@@ -30,7 +30,7 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool
     _actuatorTimer->start(COACH_ITERATION_INTERVAL_MS);
     this->teamColor = teamColor;
     this->ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()}, this->teamColor);
-    this->db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()}, this->teamColor);
+    this->db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()}, this->teamColor, getPlayer(teamColor,0).value());
     this->gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()}, this->teamColor);
     now.resize(2);
     for(int i=0;i<2;i++){
@@ -93,13 +93,14 @@ void Coach::updateData(){
 
 void Coach::updateDataToBehaviors(){
     updateData();
-    //this->gb->PlayersData = now;
+    this->gb->PlayersData = now;
     this->gb->ballData = now_ball;
-    //this->db->PlayersData = now;
+    this->db->PlayersData = now;
     this->db->ballData = now_ball;
-    //this->ab->PlayersData= now;
+    this->ab->PlayersData= now;
     this->ab->ballData = now_ball;
 }
+
 
 std::optional<Player*> Coach::getPlayer(const bool& isTeamBlue, const quint8& playerId) {
     // Get list of players
@@ -124,14 +125,14 @@ void Coach::runCoach() {
     updateDataToBehaviors(); //MANDATORY
     getPlayer(!teamColor,1).value()->dribble(true);
     if(state_test == 0){
-        getPlayer(!teamColor, 1).value()->rotateTo(getWorldMap()->ourGoalRightPost() + QVector2D(0,0.05));
+        getPlayer(!teamColor, 1).value()->rotateTo(getWorldMap()->ourGoalLeftPost() + QVector2D(0,0.03));
         frameCounter_test++;
         if(frameCounter_test >= 120){
             state_test = 1;
         }
     }
     if(state_test == 1){
-        getPlayer(!teamColor, 1).value()->kick(6,false);
+        getPlayer(!teamColor, 1).value()->kick(10,false);
     }
 
 
