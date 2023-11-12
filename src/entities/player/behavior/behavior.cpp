@@ -35,10 +35,6 @@ void behavior::updateBallPoss(){
         teamStrategy = ATTACK;
 
     }
-    else{
-        ballPoss = CONFLICT;
-        teamStrategy = DEFENSE;
-    }
 }
 void behavior::updateReceiver(){
     if(receiver!=NULL){
@@ -47,4 +43,22 @@ void behavior::updateReceiver(){
             receiver = NULL;
         }
     }
+}
+
+bool behavior::isPathBlocked(QVector2D start, QVector2D end){
+    QVector2D StE = end - start;
+    for(int i=0;i<2;i++){
+        for(int j=0;j<6;j++){
+            if(PlayersData[i][j][0].x() > 10.0) continue;
+            QVector2D StP = PlayersData[i][j][0] - start;
+            double teta = Utils::angleBetweenVectors(StP,StE);
+            double x = cos(teta)*fabs(StP.length());
+            double d = fabs(StP.length())*sin(teta);
+
+            if(d>0.18) continue;
+            if(x < 0 || x > fabs(StE.length())) continue;
+            return true;
+        }
+    }
+    return false;
 }

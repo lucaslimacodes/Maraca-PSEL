@@ -1,7 +1,7 @@
 #include "utils.h"
 
 #include <math.h>
-
+#include <cmath>
 float Utils::smallestAngleDiff(const float &targetAngle, const float &sourceAngle) {
     float a = fmod(targetAngle + 2*M_PI, 2*M_PI) - fmod(sourceAngle + 2*M_PI, 2*M_PI);
 
@@ -28,4 +28,11 @@ bool Utils::checkIfCanBeReversed(const float &robotAngle, const float &targetAng
 
 float Utils::getAngle(const QVector2D &currentPosition, const QVector2D &targetPosition) {
     return atan2(targetPosition.y() - currentPosition.y(), targetPosition.x() -currentPosition.x());
+}
+
+double Utils::dotProduct(QVector2D v1, QVector2D v2){
+    return v1.x() * v2.x() + v1.y()*v2.y();
+}
+double Utils::angleBetweenVectors(QVector2D v1, QVector2D v2){
+    return acos(dotProduct(v1,v2)/ fabs(v1.length()) / fabs(v2.length()));
 }

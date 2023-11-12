@@ -123,17 +123,6 @@ WorldMap* Coach::getWorldMap() {
 
 void Coach::runCoach() {
     updateDataToBehaviors(); //MANDATORY
-    getPlayer(!teamColor,1).value()->dribble(true);
-    if(state_test == 0){
-        getPlayer(!teamColor, 1).value()->rotateTo(getWorldMap()->ourGoalLeftPost() + QVector2D(0,0.03));
-        frameCounter_test++;
-        if(frameCounter_test >= 120){
-            state_test = 1;
-        }
-    }
-    if(state_test == 1){
-        getPlayer(!teamColor, 1).value()->kick(10,false);
-    }
 
 
     //all behavior running

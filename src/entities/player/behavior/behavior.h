@@ -7,6 +7,7 @@
 #include <src/entities/player/player.h>
 #include <src/entities/worldmap/worldmap.h>
 #include <cmath>
+#include <src/utils/utils.h>
 #define ENEMY 100
 #define ALLY 101
 #define CONFLICT 102
@@ -32,6 +33,7 @@ public:
     bool anyEnemyNextToBall();
     bool anyAllyNextToBall();
     void updateReceiver();
+    bool isPathBlocked(QVector2D start, QVector2D end);
 };
 
 #endif // BEHAVIOR_H

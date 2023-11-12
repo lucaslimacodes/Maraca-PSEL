@@ -39,6 +39,9 @@ public:
      * \return The angle value between the currentPosition and targetPosition.
      */
     static float getAngle(const QVector2D& currentPosition, const QVector2D& targetPosition);
+
+    static double dotProduct(QVector2D v1, QVector2D v2);
+    static double angleBetweenVectors(QVector2D v1, QVector2D v2);
 };
 
 #endif // UTILS_H
