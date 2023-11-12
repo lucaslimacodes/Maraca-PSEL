@@ -1,5 +1,5 @@
-#ifndef BEHAVIOR_H
-#define BEHAVIOR_H
+#ifndef SHAREDINFOS_H
+#define SHAREDINFOS_H
 
 #include <QObject>
 #include <QVector>
@@ -15,25 +15,28 @@
 #define ATTACK 104
 #define BLUE true
 #define YELLOW false
-class behavior : public QObject
+class SharedInfos : public QObject
 {
     Q_OBJECT
 public:
     WorldMap *map;
-    QVector<Player *> players; //players that are going to behave in this strategy
     QVector<QVector<QVector<QVector2D>>> PlayersData;
     QVector<QVector2D> ballData;
+    QVector<Player *> allies;
+    QVector<Player *> enemies;
     int ballPoss;
     int teamStrategy;
     int ourTeamColor;
-    int state;
-    Player *receiver; //ally player that is going to receive a pass
+    Player *receiver;
     QVector2D getBallSpeed();
     void updateBallPoss();
     bool anyEnemyNextToBall();
     bool anyAllyNextToBall();
     void updateReceiver();
     bool isPathBlocked(QVector2D start, QVector2D end);
+    void run();
+    SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> allies, QVector<Player *> enemies);
+
 };
 
-#endif // BEHAVIOR_H
+#endif // SHAREDINFOS_H

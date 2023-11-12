@@ -1,14 +1,12 @@
 #include "att_behavior.h"
 
-att_behavior::att_behavior(WorldMap *map, QVector<Player *> players, bool ourTeam){
-    this->map = map;
+att_behavior::att_behavior(QVector<Player *> players, class SharedInfos *si){
+
     this->players = players;
-    this->ourTeamColor = ourTeam;
-    this->receiver = NULL;
+    this->si = si;
+
 }
 
 void att_behavior::run(){
-    updateReceiver(); //MANDATORY
-    updateBallPoss(); //MANDATORY
-    //TODO
+    if(si->receiver!=NULL) std::cout << si->receiver->getPosition().x() << '\n';
 }

@@ -44,8 +44,8 @@ SOURCES += \
         main.cpp \
         src/entities/actuator/actuator.cpp \
         src/entities/coach/coach.cpp \
+        src/entities/player/SharedInfos/sharedinfos.cpp \
         src/entities/player/behavior/att_behavior/att_behavior.cpp \
-        src/entities/player/behavior/behavior.cpp \
         src/entities/player/behavior/def_behavior/def_behavior.cpp \
         src/entities/player/behavior/gk_behavior/gk_behavior.cpp \
         src/entities/player/player.cpp \
@@ -71,8 +71,8 @@ HEADERS += \
     include/proto/ssl_vision_wrapper.pb.h \
     src/entities/actuator/actuator.h \
     src/entities/coach/coach.h \
+    src/entities/player/SharedInfos/sharedinfos.h \
     src/entities/player/behavior/att_behavior/att_behavior.h \
-    src/entities/player/behavior/behavior.h \
     src/entities/player/behavior/def_behavior/def_behavior.h \
     src/entities/player/behavior/gk_behavior/gk_behavior.h \
     src/entities/player/player.h \

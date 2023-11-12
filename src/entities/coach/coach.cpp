@@ -29,9 +29,10 @@ Coach::Coach(const QMap<bool, QList<Player*>>& players, WorldMap* worldMap, bool
     QObject::connect(_actuatorTimer, &QTimer::timeout, this, &Coach::runCoach);
     _actuatorTimer->start(COACH_ITERATION_INTERVAL_MS);
     this->teamColor = teamColor;
-    this->ab = new att_behavior(getWorldMap(), {getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()}, this->teamColor);
-    this->db = new def_behavior(getWorldMap(), {getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()}, this->teamColor, getPlayer(teamColor,0).value());
-    this->gb = new gk_behavior(getWorldMap(), {getPlayer(teamColor, 0).value()}, this->teamColor);
+    this->si = new SharedInfos(getWorldMap(), this->teamColor, {getPlayer(teamColor,0).value(),getPlayer(teamColor,1).value(),getPlayer(teamColor,2).value(),getPlayer(teamColor,3).value(),getPlayer(teamColor,4).value(),getPlayer(teamColor,5).value()},{getPlayer(!teamColor,0).value(),getPlayer(!teamColor,1).value(),getPlayer(!teamColor,2).value(),getPlayer(!teamColor,3).value(),getPlayer(!teamColor,4).value(),getPlayer(!teamColor,5).value()});
+    this->ab = new att_behavior({getPlayer(teamColor,3).value(), getPlayer(teamColor,4).value(), getPlayer(teamColor,5).value()}, this->si);
+    this->db = new def_behavior({getPlayer(teamColor,2).value(), getPlayer(teamColor,1).value()}, this->si);
+    this->gb = new gk_behavior({getPlayer(teamColor, 0).value()}, this->si);
     now.resize(2);
     for(int i=0;i<2;i++){
         now[i].resize(6);
@@ -62,6 +63,7 @@ Coach::~Coach(){
     delete ab;
     delete db;
     delete gb;
+    delete si;
 }
 
 
@@ -91,14 +93,11 @@ void Coach::updateData(){
 
 }
 
-void Coach::updateDataToBehaviors(){
+void Coach::updateDataToSharedInfos(){
     updateData();
-    this->gb->PlayersData = now;
-    this->gb->ballData = now_ball;
-    this->db->PlayersData = now;
-    this->db->ballData = now_ball;
-    this->ab->PlayersData= now;
-    this->ab->ballData = now_ball;
+    this->si->PlayersData = now;
+    this->si->ballData = now_ball;
+    this->si->run();
 }
 
 
@@ -122,7 +121,7 @@ WorldMap* Coach::getWorldMap() {
 }
 
 void Coach::runCoach() {
-    updateDataToBehaviors(); //MANDATORY
+    updateDataToSharedInfos(); //MANDATORY
 
 
     //all behavior running

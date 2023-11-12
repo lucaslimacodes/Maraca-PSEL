@@ -32,6 +32,7 @@
 #include <src/entities/player/behavior/att_behavior/att_behavior.h>
 #include <src/entities/player/behavior/def_behavior/def_behavior.h>
 #include <src/entities/player/behavior/gk_behavior/gk_behavior.h>
+#include <src/entities/player/SharedInfos/sharedinfos.h>
 using namespace std::chrono;
 #include <spdlog/spdlog.h>
 
@@ -54,6 +55,7 @@ public:
     att_behavior *ab;
     def_behavior *db;
     gk_behavior *gb;
+    SharedInfos *si;
     int state_test;
     int frameCounter_test;
 
@@ -70,7 +72,7 @@ public:
 
     QVector2D getBallVelocity();
     QVector2D getBallAcceleration();
-    void updateDataToBehaviors();
+    void updateDataToSharedInfos();
 
 protected:
     /*!

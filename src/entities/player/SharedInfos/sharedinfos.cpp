@@ -1,10 +1,10 @@
-#include "behavior.h"
+#include "sharedinfos.h"
 
-QVector2D behavior::getBallSpeed(){
+QVector2D SharedInfos::getBallSpeed(){
     return ballData[1];
 }
 
-bool behavior::anyEnemyNextToBall(){
+bool SharedInfos::anyEnemyNextToBall(){
     for(int i=0;i<6;i++){
         if(fabs((PlayersData[!ourTeamColor][i][0] - map->ballPosition()).length()) <= 0.18){
             return true;
@@ -13,7 +13,7 @@ bool behavior::anyEnemyNextToBall(){
     return false;
 }
 
-bool behavior::anyAllyNextToBall(){
+bool SharedInfos::anyAllyNextToBall(){
     for(int i=0;i<6;i++){
         if(fabs((PlayersData[ourTeamColor][i][0] - map->ballPosition()).length()) <= 0.18){
             return true;
@@ -21,7 +21,7 @@ bool behavior::anyAllyNextToBall(){
     }
     return false;
 }
-void behavior::updateBallPoss(){
+void SharedInfos::updateBallPoss(){
     if(anyEnemyNextToBall() && !anyAllyNextToBall() && receiver == NULL){
         ballPoss = ENEMY;
         teamStrategy = DEFENSE;
@@ -36,7 +36,7 @@ void behavior::updateBallPoss(){
 
     }
 }
-void behavior::updateReceiver(){
+void SharedInfos::updateReceiver(){
     if(receiver!=NULL){
         if(anyEnemyNextToBall()) receiver = NULL;
         if(fabs((map->ballPosition() - receiver->getPosition()).length()) <= 0.18){
@@ -45,7 +45,7 @@ void behavior::updateReceiver(){
     }
 }
 
-bool behavior::isPathBlocked(QVector2D start, QVector2D end){
+bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end){
     QVector2D StE = end - start;
     for(int i=0;i<2;i++){
         for(int j=0;j<6;j++){
@@ -61,4 +61,17 @@ bool behavior::isPathBlocked(QVector2D start, QVector2D end){
         }
     }
     return false;
+}
+
+void SharedInfos::run(){
+    updateReceiver();
+    updateBallPoss();
+}
+SharedInfos::SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> allies, QVector<Player *> enemies){
+    this->map = map;
+    this->ourTeamColor = ourTeamColor;
+    this->receiver = NULL;
+    this->allies = allies;
+    this->enemies = enemies;
+
 }

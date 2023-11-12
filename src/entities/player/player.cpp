@@ -36,6 +36,8 @@ Player::Player(const bool& isTeamBlue, const quint8& playerId)
     state = 0;
 }
 
+
+
 bool Player::isMissing() const {
     return (_position == OUT_OF_FIELD);
 }
