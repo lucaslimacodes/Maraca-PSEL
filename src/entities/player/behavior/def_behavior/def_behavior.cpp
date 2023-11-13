@@ -4,7 +4,7 @@ def_behavior::def_behavior(QVector<Player *> players, class SharedInfos *si){
 
     this->players = players;
     this->si = si;
-    this->state = 0;
+    this->state = HELPING_GK;
 
 }
 QVector2D def_behavior::getGoalCircleCenter(){
@@ -35,9 +35,14 @@ void def_behavior::helpGoal(){
 
 }
 void def_behavior::run(){
-    helpGoal();
-    if(state == 0){
-        si->receiver = players[0];
-        state = 1;
+    players[0]->dribble(true);
+    if(si->isPathBlocked(si->map->ballPosition(), si->allies[1]->getPosition())){
+        players[0]->goTo(QVector2D(-4.5,-0.5));
+        players[0]->rotateTo(si->allies[1]->getPosition());
+
     }
+    else{
+        si->passBall(players[0], si->allies[1]);
+    }
+    std::cout << si->isPathBlocked(si->map->ballPosition(), si->allies[1]->getPosition()) << '\n';
 }

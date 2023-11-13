@@ -97,6 +97,7 @@ protected:
     friend class gk_behavior;
     friend class def_behavior;
     friend class att_behavior;
+    friend class SharedInfos;
 
     /*!
      * \brief Make this Player go to a given target position.

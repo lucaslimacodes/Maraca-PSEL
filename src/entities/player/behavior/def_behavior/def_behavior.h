@@ -19,6 +19,7 @@
 #define HELPING_GK 201
 #define ADVANCING_TOWARDS_BALL 202
 #define ATTACKING 203
+#define PASSING 204
 class def_behavior : public QObject
 {
     Q_OBJECT
