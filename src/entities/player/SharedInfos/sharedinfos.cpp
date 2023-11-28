@@ -67,12 +67,13 @@ void SharedInfos::updateBallHolder(){
     }
 }
 
-bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end){
+bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end, QVector<int> ignoreAlly_Ids){
     QVector2D StE = end - start;
+
     for(int i=0;i<2;i++){
         for(int j=0;j<6;j++){
             if(PlayersData[i][j][0].x() > 10.0) continue;
-            if(this->receiver!=NULL && i == this->ourTeamColor && this->receiver->getPlayerId() == j) continue;
+            if(i == this->ourTeamColor && ignoreAlly_Ids.contains(j)) continue;
             QVector2D StP = PlayersData[i][j][0] - start;
             double teta = Utils::angleBetweenVectors(StP,StE);
             double x = cos(teta)*fabs(StP.length());
@@ -80,6 +81,7 @@ bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end){
 
             if(d>0.18) continue;
             if(x < 0 || x > fabs(StE.length())) continue;
+            std::cout << i << "," << j << '\n';
             return true;
         }
     }

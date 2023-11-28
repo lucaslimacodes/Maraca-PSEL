@@ -35,14 +35,6 @@ void def_behavior::helpGoal(){
 
 }
 void def_behavior::run(){
-    players[0]->dribble(true);
-    if(si->isPathBlocked(si->map->ballPosition(), si->allies[1]->getPosition())){
-        players[0]->goTo(QVector2D(-4.5,-0.5));
-        players[0]->rotateTo(si->allies[1]->getPosition());
 
-    }
-    else{
-        si->passBall(players[0], si->allies[1]);
-    }
-    std::cout << si->isPathBlocked(si->map->ballPosition(), si->allies[1]->getPosition()) << '\n';
+    std::cout << si->isPathBlocked(si->map->ballPosition(), si->allies[1]->getPosition(), {1}) << '\n';
 }
