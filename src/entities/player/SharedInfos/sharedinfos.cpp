@@ -67,13 +67,13 @@ void SharedInfos::updateBallHolder(){
     }
 }
 
-bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end, QVector<int> ignoreAlly_Ids){
+bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end, QVector<quint8> ignoreAlly_Ids){
     QVector2D StE = end - start;
 
     for(int i=0;i<2;i++){
         for(int j=0;j<6;j++){
             if(PlayersData[i][j][0].x() > 10.0) continue;
-            if(i == this->ourTeamColor && ignoreAlly_Ids.contains(j)) continue;
+            if(i == this->ourTeamColor && ignoreAlly_Ids.contains(allies[j]->getPlayerId())) continue;
             QVector2D StP = PlayersData[i][j][0] - start;
             double teta = Utils::angleBetweenVectors(StP,StE);
             double x = cos(teta)*fabs(StP.length());
@@ -104,13 +104,15 @@ SharedInfos::SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> all
 }
 void SharedInfos::passBall(Player *p_start, Player *p_end){
     QVector2D StE = p_end->getPosition() - p_start->getPosition();
+    double dist = fabs(StE.length());
     double angle = atan2(StE.y(), StE.x());
     if(fabs(p_start->getOrientation() - angle) > 0.05){
         p_start->rotateTo(p_end->getPosition());
     }
     else{
-        p_start->kick(4, false);
+        p_start->kick(2+dist*1.0, false);
+        this->receiver = p_end;
     }
-    this->receiver = p_end;
+
 
 }

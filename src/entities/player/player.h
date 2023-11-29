@@ -106,7 +106,7 @@ protected:
     void goTo(const QVector2D& targetPosition);
 
     void sendPacket(float vx, float vy, float vw);
-
+    void sendPacket(float vx, float vy);
     /*!
      * \brief Make this Player rotate to a given target position.
      * \param targetPosition The given target position.

@@ -117,6 +117,16 @@ void Player::sendPacket(float vx, float vy, float vw){
 
 }
 
+void Player::sendPacket(float vx, float vy){
+    _controlMutex.lock();
+    _controlPacket->setForwardSpeed(vx);
+    _controlPacket->setLeftSpeed(vy);
+    _controlMutex.unlock();
+
+    emit sendControlPacket(*_controlPacket);
+
+}
+
 void Player::rotateTo(const QVector2D &targetPosition)
 {
     QVector2D distToTarget = targetPosition - this->getPosition();
@@ -145,7 +155,7 @@ void Player::kick(const float kickSpeed, bool isChipped)
 {
     float chipAngle = 0.0f;
     if (isChipped) {
-        chipAngle = M_PI_4;
+        chipAngle = 45.0f;
     }
 
     _controlMutex.lock();

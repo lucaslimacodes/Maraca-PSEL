@@ -36,7 +36,7 @@ public:
     bool anyAllyNextToBall();
     void updateReceiver();
     void updateBallHolder();
-    bool isPathBlocked(QVector2D start, QVector2D end, QVector<int> ignore);
+    bool isPathBlocked(QVector2D start, QVector2D end, QVector<quint8> ignore);
     void passBall(Player *p_start, Player *p_end);
     void run();
     SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> allies, QVector<Player *> enemies);

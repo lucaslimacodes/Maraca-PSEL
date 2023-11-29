@@ -10,6 +10,16 @@ def_behavior::def_behavior(QVector<Player *> players, class SharedInfos *si){
 QVector2D def_behavior::getGoalCircleCenter(){
     return (si->ourTeamColor == BLUE) ? si->map->ourGoalCenter() + QVector2D(0.09,0) : si->map->ourGoalCenter() - QVector2D(0.09,0);
 }
+void def_behavior::predictBall(int id){
+    QVector2D ballToPlayer = players[id]->getPosition() - si->map->ballPosition();
+    double angleBtP = atan2(ballToPlayer.y(), ballToPlayer.x());
+    double angleSpeed = atan2(si->getBallSpeed().y(), si->getBallSpeed().x());
+    if(angleBtP < 0) angleBtP += M_PI * 2;
+    if(angleSpeed < 0) angleSpeed +=M_PI*2;
+    double teta = fabs(angleBtP - angleSpeed);
+    QVector2D p = si->getBallSpeed()/cos(teta) * fabs(ballToPlayer.length())/fabs(si->getBallSpeed().length()) - ballToPlayer;
+    players[id]->goTo(players[id]->getPosition() + p);
+}
 void def_behavior::helpGoal(){
     QVector2D centerToGk = si->PlayersData[si->ourTeamColor][0][0] - getGoalCircleCenter();
     QVector2D CtG_45_CW = QVector2D(centerToGk.x()*cos(-M_PI/4) - centerToGk.y()*sin(-M_PI/4), centerToGk.x()*sin(-M_PI/4) + centerToGk.y()*cos(-M_PI/4));
@@ -35,6 +45,6 @@ void def_behavior::helpGoal(){
 
 }
 void def_behavior::run(){
+    if(this->state == HELPING_GK) helpGoal();
 
-    std::cout << si->isPathBlocked(si->map->ballPosition(), si->allies[1]->getPosition(), {1}) << '\n';
 }

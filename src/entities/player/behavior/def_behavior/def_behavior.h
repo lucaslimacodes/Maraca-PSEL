@@ -27,6 +27,7 @@ public:
     def_behavior(QVector<Player *> players, SharedInfos *si);
     void run();
     void helpGoal();
+    void predictBall(int id);
     int state;
     QVector<Player *> players;
     SharedInfos *si;

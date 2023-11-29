@@ -122,8 +122,7 @@ WorldMap* Coach::getWorldMap() {
 
 void Coach::runCoach() {
     updateDataToSharedInfos(); //MANDATORY
-
-
+    si->passBall(getPlayer(YELLOW,4).value(), getPlayer(YELLOW,5).value());
     //all behavior running
     ab->run();
     db->run();
