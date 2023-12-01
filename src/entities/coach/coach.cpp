@@ -97,7 +97,7 @@ void Coach::updateDataToSharedInfos(){
     updateData();
     this->si->PlayersData = now;
     this->si->ballData = now_ball;
-    this->si->run();
+
 }
 
 
@@ -122,7 +122,17 @@ WorldMap* Coach::getWorldMap() {
 
 void Coach::runCoach() {
     updateDataToSharedInfos(); //MANDATORY
-    si->passBall(getPlayer(YELLOW,4).value(), getPlayer(YELLOW,5).value());
+    if(fabs((getPlayer(YELLOW, 5).value()->getPosition() - getWorldMap()->ballPosition()).length()) > 0.14 && getPlayer(YELLOW, 5).value()->state == 0){
+        getPlayer(YELLOW, 5).value()->goTo(getWorldMap()->ballPosition());
+        getPlayer(YELLOW, 5).value()->rotateTo(getWorldMap()->ballPosition());
+    }
+    else {
+        si->passBall(getPlayer(YELLOW, 5).value(), getPlayer(YELLOW, 3).value());
+        getPlayer(YELLOW, 5).value()->state = 1;
+    }
+    std::cout << getPlayer(YELLOW, 3).value()->hasBall << ',' << getPlayer(YELLOW, 3).value()->isReceiver << ',' << getPlayer(YELLOW, 3).value()->timeWaiting <<',' << getPlayer(YELLOW, 3).value()->state << '\n';
+
+    std::cout << getPlayer(YELLOW,5).value()->hasBall << '\n';
     //all behavior running
     ab->run();
     db->run();

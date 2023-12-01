@@ -25,20 +25,12 @@ public:
     QVector<QVector2D> ballData;
     QVector<Player *> allies;
     QVector<Player *> enemies;
-    int ballPoss;
-    int teamStrategy;
-    int ourTeamColor;
-    Player *ballHolder;
-    Player *receiver;
+    int ourTeamColor;;
     QVector2D getBallSpeed();
-    void updateBallPoss();
     bool anyEnemyNextToBall();
     bool anyAllyNextToBall();
-    void updateReceiver();
-    void updateBallHolder();
     bool isPathBlocked(QVector2D start, QVector2D end, QVector<quint8> ignore);
     void passBall(Player *p_start, Player *p_end);
-    void run();
     SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> allies, QVector<Player *> enemies);
 
 };

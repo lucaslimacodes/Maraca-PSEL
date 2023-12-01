@@ -15,22 +15,22 @@
 #define ATTACK 104
 #define BLUE true
 #define YELLOW false
-#define MOVING_TOWARD_TARGET 501
-#define WAIT_FOR_BALL 502
+#define WAITING_FOR_BALL 801
 #define PREDICTING_BALL 203
-#define KICK_BALL_TO_GOAL 504
+#define PASSING_BALL 803
+#define FINDING_OPPORTUNITY_TO_KICK 804
+#define KICKING_BALL 805
 class att_behavior : public QObject
 {
     Q_OBJECT
 public:
     att_behavior(QVector<Player *> players, SharedInfos *si);
     int state;
-    int attack_state;
-    QVector<QVector2D> attTarget;
     QVector<Player *> players;
     SharedInfos *si;
+    QVector2D below_att_pos;
+    QVector2D above_att_pos;
     void predictBall(int id);
-    void attack();
     void run();
 };
 

@@ -47,6 +47,9 @@ class Player : public QObject
     Q_OBJECT
 public:
     int state;
+    bool hasBall;
+    bool isReceiver;
+    int timeWaiting;
     /*!
      * \brief Player class constructor.
      * \param isTeamBlue If this player belongs to the team blue.

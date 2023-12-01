@@ -4,20 +4,19 @@ att_behavior::att_behavior(QVector<Player *> players, class SharedInfos *si){
 
     this->players = players;
     this->si = si;
-    attTarget.resize(2);
     if(si->ourTeamColor == YELLOW){
-        attTarget[0] = QVector2D(-2.95, -2.03);
-        attTarget[1] = QVector2D(-2.95, 2.03);
-
+        this->below_att_pos = QVector2D(-2.335,-1.964);
+        this->above_att_pos = QVector2D(-2.335, 1.964);
     }
     else{
-        attTarget[0] = QVector2D(2.95, -2.03);
-        attTarget[1] = QVector2D(2.95, 2.03);
-
+        this->below_att_pos = QVector2D(2.335,-1.964);
+        this->above_att_pos = QVector2D(2.335, 1.964);
     }
-    players[0]->state = 0;
-    players[1]->state = 0;
+    players[0]->state = WAITING_FOR_BALL;
+    players[1]->state = WAITING_FOR_BALL;
     players[2]->state = 0;
+    //teste
+    players[2]->hasBall = true;
 
 }
 void att_behavior::predictBall(int id){
@@ -32,44 +31,90 @@ void att_behavior::predictBall(int id){
     players[id]->goTo(players[id]->getPosition() + p);
 }
 
-void att_behavior::attack(){
-    for(int i=0;i<3;i++){
-        if(players[i]->state == MOVING_TOWARD_TARGET){
-            players[i]->rotateTo(si->map->ballPosition());
-            players[i]->goTo(attTarget[i]);
-            if(fabs((players[i]->getPosition() - attTarget[i]).length()) <= 0.05){
-                players[i]->state = WAIT_FOR_BALL;
-            }
-
-        }
-        if(players[i]->state == WAIT_FOR_BALL){
-            players[i]->sendPacket(0,0);
-            players[i]->rotateTo(si->map->ballPosition());
-            if(si->receiver == players[i]){
-                players[i]->state = PREDICTING_BALL;
-            }
-
-        }
-        if(players[i]->state == PREDICTING_BALL){
-            predictBall(i);
-            if(si->ballHolder == players[i] && (si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalCenter(), {(quint8)i}) == false || si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalLeftPost(), {(quint8)i}) == false || si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalRightPost(), {(quint8)i}) == false)){
-                players[i]->state = KICK_BALL_TO_GOAL;
-            }
-            if(si->ballHolder != players[i] && si->receiver != players[i]){
-                players[i]->state = WAIT_FOR_BALL;
-            }
-        }
-        if(players[i]->state == KICK_BALL_TO_GOAL){
-
-        }
-    }
-}
 
 
 void att_behavior::run(){
-    players[0]->dribble(true);
-    players[1]->dribble(true);
-    players[2]->dribble(true);
-    if(si->teamStrategy == ATTACK) attack();
+    players[0]->dribble(true); //3: below
+    players[1]->dribble(true); //4: above
+    players[2]->dribble(true); //5
+    for(int i=0;i<3;i++){
+        if(players[i]->state == WAITING_FOR_BALL){
+            players[i]->rotateTo(si->map->ballPosition());
+            if(i == 0) players[i]->goTo(this->below_att_pos);
+            if(i == 1) players[i]->goTo(this->above_att_pos);
+            if(players[i]->isReceiver) {
+                players[i]->state = PREDICTING_BALL;
+                players[i]->timeWaiting = 0;
+            }
+        }
+        if(players[i]->state == PREDICTING_BALL){
+            predictBall(i);
+            players[i]->timeWaiting++;
+            if(fabs((players[i]->getPosition() - si->map->ballPosition()).length()) <= 0.18){
+                players[i]->hasBall = true;
+                players[i]->isReceiver = false;
+                players[i]->state = FINDING_OPPORTUNITY_TO_KICK;
+                players[i]->timeWaiting = 0;
+
+            }
+            if(players[i]->timeWaiting > 360){
+                players[i]->isReceiver = false;
+                players[i]->state = WAITING_FOR_BALL;
+
+            }
+        }
+        if(players[i]->state == FINDING_OPPORTUNITY_TO_KICK){
+            if(fabs((players[i]->getPosition() - si->map->ballPosition()).length()) >= 0.15){
+                players[i]->goTo(si->map->ballPosition() + (si->map->ballPosition() - players[i]->getPosition()));
+                players[i]->rotateTo(si->map->ballPosition());
+                if(si->ourTeamColor == YELLOW){
+                    if(si->map->ballPosition().x() > 0){
+                        players[i]->hasBall = false;
+                        players[i]->timeWaiting = 0;
+                        players[i]->state = WAITING_FOR_BALL;
+                    }
+                }
+                else{
+                    if(si->map->ballPosition().x() < 0){
+                        players[i]->hasBall = false;
+                        players[i]->timeWaiting = 0;
+                        players[i]->state = WAITING_FOR_BALL;
+                    }
+                }
+            }
+            else{
+                players[i]->rotateTo(si->map->theirGoalCenter());
+                if(i == 0) players[i]->goTo(this->above_att_pos);
+                if(i == 1) players[i]->goTo(this->below_att_pos);
+                if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalCenter(), {players[i]->getPlayerId()}) == false){
+                    players[i]->state = KICKING_BALL;
+                }
+                if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalLeftPost(), {players[i]->getPlayerId()}) == false){
+                    players[i]->state = KICKING_BALL;
+                }
+                if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalRightPost(), {players[i]->getPlayerId()}) == false){
+                    players[i]->state = KICKING_BALL;
+                }
+                if(i == 0){
+                    if(fabs((players[i]->getPosition() - this->above_att_pos).length()) <= 0.1){
+                        players[i]->state = KICKING_BALL;
+                        players[i]->timeWaiting = 0;
+                    }
+                }
+                if(i == 1){
+                    if(fabs((players[i]->getPosition() - this->below_att_pos).length()) <= 0.1){
+                        players[i]->state = KICKING_BALL;
+                        players[i]->timeWaiting = 0;
+                    }
+                }
+
+            }
+        }
+        if(players[i]->state == KICKING_BALL){
+            //TODO
+        }
+    }
+
+
 
 }

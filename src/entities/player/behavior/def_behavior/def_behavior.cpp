@@ -45,6 +45,6 @@ void def_behavior::helpGoal(){
 
 }
 void def_behavior::run(){
-    if(this->state == HELPING_GK) helpGoal();
+    helpGoal();
 
 }

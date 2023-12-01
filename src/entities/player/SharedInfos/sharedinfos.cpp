@@ -21,51 +21,8 @@ bool SharedInfos::anyAllyNextToBall(){
     }
     return false;
 }
-void SharedInfos::updateBallPoss(){
-    if(anyEnemyNextToBall() && !anyAllyNextToBall() && receiver == NULL){
-        ballPoss = ENEMY;
-        teamStrategy = DEFENSE;
-    }
-    if((anyEnemyNextToBall() && anyAllyNextToBall()) || (!anyAllyNextToBall() && !anyEnemyNextToBall())){
-        ballPoss = CONFLICT;
-        teamStrategy = DEFENSE;
-    }
-    if((anyAllyNextToBall() && !anyEnemyNextToBall()) || receiver != NULL){
-        ballPoss = ALLY;
-        teamStrategy = ATTACK;
 
-    }
-}
-void SharedInfos::updateReceiver(){
-    if(receiver!=NULL){
-        if(anyEnemyNextToBall()) receiver = NULL;
-        if(fabs((map->ballPosition() - receiver->getPosition()).length()) <= 0.18){
-            this->ballHolder = receiver;
-            receiver = NULL;
 
-        }
-    }
-}
-
-void SharedInfos::updateBallHolder(){
-    if(this->ballPoss == CONFLICT) this->ballHolder = NULL;
-    else if(this->ballPoss == ALLY){
-        for(int i=0;i<6;i++){
-            if(fabs((this->allies[i]->getPosition() - this->map->ballPosition()).length()) <= 0.18 && allies[i]!=NULL){
-                this->ballHolder = allies[i];
-                break;
-            }
-        }
-    }
-    else if(this->ballPoss == ENEMY){
-        for(int i=0;i<6;i++){
-            if(fabs((this->enemies[i]->getPosition() - this->map->ballPosition()).length()) <= 0.18 && enemies[i]!=NULL){
-                this->ballHolder = enemies[i];
-                break;
-            }
-        }
-    }
-}
 
 bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end, QVector<quint8> ignoreAlly_Ids){
     QVector2D StE = end - start;
@@ -88,31 +45,31 @@ bool SharedInfos::isPathBlocked(QVector2D start, QVector2D end, QVector<quint8> 
     return false;
 }
 
-void SharedInfos::run(){
-    updateReceiver();
-    updateBallPoss();
-    updateBallHolder();
-}
 SharedInfos::SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> allies, QVector<Player *> enemies){
     this->map = map;
     this->ourTeamColor = ourTeamColor;
-    this->receiver = NULL;
-    this->ballHolder = NULL;
+
     this->allies = allies;
     this->enemies = enemies;
 
 }
 void SharedInfos::passBall(Player *p_start, Player *p_end){
-    QVector2D StE = p_end->getPosition() - p_start->getPosition();
-    double dist = fabs(StE.length());
-    double angle = atan2(StE.y(), StE.x());
-    if(fabs(p_start->getOrientation() - angle) > 0.05){
-        p_start->rotateTo(p_end->getPosition());
+    if(p_start->hasBall){
+        QVector2D StE = p_end->getPosition() - p_start->getPosition();
+        double dist = fabs(StE.length());
+        double angle = atan2(StE.y(), StE.x());
+        if(fabs(p_start->getOrientation() - angle) > 0.05){
+            p_start->rotateTo(p_end->getPosition());
+        }
+        else{
+            p_start->kick(2+dist*1.0, false);
+            p_start->hasBall = false;
+            p_end->isReceiver = true;
+        }
+        /*if(fabs((p_start->getPosition() - map->ballPosition()).length()) > 0.25){
+            p_start->hasBall = false;
+            p_end->isReceiver = true;
+        }*/
     }
-    else{
-        p_start->kick(2+dist*1.0, false);
-        this->receiver = p_end;
-    }
-
 
 }
