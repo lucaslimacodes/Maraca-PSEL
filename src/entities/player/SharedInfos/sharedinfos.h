@@ -10,6 +10,7 @@
 #include <optional>
 #include <src/utils/utils.h>
 #define ENEMY 100
+#define OFFSET 0.12
 #define ALLY 101
 #define CONFLICT 102
 #define DEFENSE 103
@@ -25,12 +26,13 @@ public:
     QVector<QVector2D> ballData;
     QVector<Player *> allies;
     QVector<Player *> enemies;
-    int ourTeamColor;;
+    int ourTeamColor;
     QVector2D getBallSpeed();
     bool anyEnemyNextToBall();
     bool anyAllyNextToBall();
     bool isPathBlocked(QVector2D start, QVector2D end, QVector<quint8> ignore);
     void passBall(Player *p_start, Player *p_end);
+    void kickBall(Player *p, QVector2D target);
     SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> allies, QVector<Player *> enemies);
 
 };

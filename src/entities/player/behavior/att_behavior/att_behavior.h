@@ -19,7 +19,9 @@
 #define PREDICTING_BALL 203
 #define PASSING_BALL 803
 #define FINDING_OPPORTUNITY_TO_KICK 804
-#define KICKING_BALL 805
+#define KICKING_BALL_CENTER 805
+#define KICKING_BALL_LEFT 806
+#define KICKING_BALL_RIGHT 807
 class att_behavior : public QObject
 {
     Q_OBJECT

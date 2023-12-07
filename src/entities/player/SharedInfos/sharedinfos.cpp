@@ -52,6 +52,7 @@ SharedInfos::SharedInfos(WorldMap *map, bool ourTeamColor, QVector<Player *> all
     this->allies = allies;
     this->enemies = enemies;
 
+
 }
 void SharedInfos::passBall(Player *p_start, Player *p_end){
     if(p_start->hasBall){
@@ -72,4 +73,28 @@ void SharedInfos::passBall(Player *p_start, Player *p_end){
         }*/
     }
 
+}
+
+void SharedInfos::kickBall(Player *p, QVector2D target){
+    if(ourTeamColor == YELLOW){
+        if(target == map->theirGoalLeftPost()) target = map->theirGoalLeftPost() + QVector2D(0,OFFSET);
+        if(target == map->theirGoalRightPost()) target = map->theirGoalRightPost() - QVector2D(0,OFFSET);
+    }
+    else{
+        if(target == map->theirGoalLeftPost()) target = map->theirGoalLeftPost() - QVector2D(0,OFFSET);
+        if(target == map->theirGoalRightPost()) target = map->theirGoalRightPost() + QVector2D(0,OFFSET);
+    }
+    if(p->hasBall){
+        QVector2D StE = target - p->getPosition();
+
+        double angle = atan2(StE.y(), StE.x());
+        if(fabs(p->getOrientation() - angle) > 0.03){
+            p->rotateTo(target);
+        }
+        else if(p->timeWaiting>30){
+            p->kick(6, false);
+            p->hasBall = false;
+            p->timeWaiting = 0;
+        }
+    }
 }

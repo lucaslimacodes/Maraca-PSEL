@@ -155,7 +155,7 @@ void Player::kick(const float kickSpeed, bool isChipped)
 {
     float chipAngle = 0.0f;
     if (isChipped) {
-        chipAngle = 45.0f;
+        chipAngle = 30.0f;
     }
 
     _controlMutex.lock();

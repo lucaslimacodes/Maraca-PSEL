@@ -64,7 +64,8 @@ void att_behavior::run(){
             }
         }
         if(players[i]->state == FINDING_OPPORTUNITY_TO_KICK){
-            if(fabs((players[i]->getPosition() - si->map->ballPosition()).length()) >= 0.15){
+            players[i]->timeWaiting++;
+            if(fabs((players[i]->getPosition() - si->map->ballPosition()).length()) >= 0.15 && fabs(players[i]->getOrientation() - atan2((si->map->ballPosition() - players[i]->getPosition()).y(), (si->map->ballPosition() - players[i]->getPosition()).x())) >= 0.05){
                 players[i]->goTo(si->map->ballPosition() + (si->map->ballPosition() - players[i]->getPosition()));
                 players[i]->rotateTo(si->map->ballPosition());
                 if(si->ourTeamColor == YELLOW){
@@ -82,36 +83,55 @@ void att_behavior::run(){
                     }
                 }
             }
-            else{
+            else if(players[i]->timeWaiting >= 25){
                 players[i]->rotateTo(si->map->theirGoalCenter());
                 if(i == 0) players[i]->goTo(this->above_att_pos);
                 if(i == 1) players[i]->goTo(this->below_att_pos);
                 if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalCenter(), {players[i]->getPlayerId()}) == false){
-                    players[i]->state = KICKING_BALL;
+                    players[i]->state = KICKING_BALL_CENTER;
+                    players[i]->timeWaiting = 0;
                 }
                 if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalLeftPost(), {players[i]->getPlayerId()}) == false){
-                    players[i]->state = KICKING_BALL;
+                    players[i]->state = KICKING_BALL_LEFT;
+                    players[i]->timeWaiting = 0;
                 }
                 if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalRightPost(), {players[i]->getPlayerId()}) == false){
-                    players[i]->state = KICKING_BALL;
+                    players[i]->state = KICKING_BALL_RIGHT;
+                    players[i]->timeWaiting = 0;
                 }
                 if(i == 0){
                     if(fabs((players[i]->getPosition() - this->above_att_pos).length()) <= 0.1){
-                        players[i]->state = KICKING_BALL;
+                        players[i]->state = KICKING_BALL_CENTER;
                         players[i]->timeWaiting = 0;
                     }
                 }
                 if(i == 1){
                     if(fabs((players[i]->getPosition() - this->below_att_pos).length()) <= 0.1){
-                        players[i]->state = KICKING_BALL;
+                        players[i]->state = KICKING_BALL_CENTER;
                         players[i]->timeWaiting = 0;
                     }
                 }
 
             }
         }
-        if(players[i]->state == KICKING_BALL){
-            //TODO
+        if(players[i]->state == KICKING_BALL_CENTER){
+            players[i]->sendPacket(0,0);
+            players[i]->timeWaiting++;
+            si->kickBall(players[i], si->map->theirGoalCenter());
+            if(players[i]->hasBall == false) players[i]->state = WAITING_FOR_BALL;
+        }
+        if(players[i]->state == KICKING_BALL_LEFT){
+            players[i]->sendPacket(0,0);
+            players[i]->timeWaiting++;
+            si->kickBall(players[i], si->map->theirGoalLeftPost());
+            if(players[i]->hasBall == false) players[i]->state = WAITING_FOR_BALL;
+        }
+        if(players[i]->state == KICKING_BALL_RIGHT){
+            players[i]->sendPacket(0,0);
+            players[i]->timeWaiting++;
+            si->kickBall(players[i], si->map->theirGoalRightPost());
+            if(players[i]->hasBall == false) players[i]->state = WAITING_FOR_BALL;
+
         }
     }
 
