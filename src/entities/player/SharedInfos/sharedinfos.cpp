@@ -63,7 +63,9 @@ void SharedInfos::passBall(Player *p_start, Player *p_end){
             p_start->rotateTo(p_end->getPosition());
         }
         else{
-            p_start->kick(2+dist*1.0, false);
+            if(isPathBlocked(p_start->getPosition(), p_end->getPosition(), {p_start->getPlayerId(), p_end->getPlayerId()}) == true)
+                p_start->kick(2+dist*0.85, true);
+            else p_start->kick(2+dist*1.0, false);
             p_start->hasBall = false;
             p_end->isReceiver = true;
         }

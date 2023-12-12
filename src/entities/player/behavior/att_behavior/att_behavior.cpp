@@ -13,11 +13,14 @@ att_behavior::att_behavior(QVector<Player *> players, class SharedInfos *si){
         this->above_att_pos = QVector2D(2.335, 1.964);
     }
     players[0]->state = WAITING_FOR_BALL;
+    players[0]->hasBall = false;
+    players[0]->isReceiver = false;
     players[1]->state = WAITING_FOR_BALL;
-    players[2]->state = 0;
-    //teste
-    players[2]->hasBall = true;
-
+    players[1]->hasBall = false;
+    players[1]->isReceiver = false;
+    players[2]->state = PROTECTING_BALL;
+    players[2]->hasBall = false;
+    players[2]->isReceiver = false;
 }
 void att_behavior::predictBall(int id){
     players[id]->rotateTo(si->map->ballPosition());
@@ -31,8 +34,15 @@ void att_behavior::predictBall(int id){
     players[id]->goTo(players[id]->getPosition() + p);
 }
 
+void att_behavior::protectBall(int id){
+    QVector2D BallToCenter = si->map->ourGoalCenter() - si->map->ballPosition();
+    players[id]->goTo(si->map->ballPosition() + BallToCenter/2);
+}
 
-
+bool att_behavior::isPlayerNextToBall(int id){
+    if(fabs((players[id]->getPosition() - si->map->ballPosition()).length()) < 0.18) return true;
+    else return false;
+}
 void att_behavior::run(){
     players[0]->dribble(true); //3: below
     players[1]->dribble(true); //4: above
@@ -133,6 +143,58 @@ void att_behavior::run(){
             if(players[i]->hasBall == false) players[i]->state = WAITING_FOR_BALL;
 
         }
+        if(players[i]->state == PROTECTING_BALL){
+            protectBall(i);
+            players[i]->rotateTo(si->map->ballPosition());
+            if(si->anyEnemyNextToBall() == false){
+                players[i]->state = ADVANCING_TO_BALL;
+            }
+            if(si->ourTeamColor == YELLOW){
+                if(si->map->ballPosition().x() > 2.5){
+                    players[i]->state = ADVANCING_TO_BALL;
+                }
+            }
+            else{
+                if(si->map->ballPosition().x() < 2.5){
+                    players[i]->state = ADVANCING_TO_BALL;
+                }
+            }
+
+        }
+        if(players[i]->state == ADVANCING_TO_BALL){
+            players[i]->goTo(si->map->ballPosition() + (si->map->ballPosition() - players[i]->getPosition())/2);
+            players[i]->rotateTo(si->map->ballPosition());
+            if(isPlayerNextToBall(i) && si->anyEnemyNextToBall() == false){
+                players[i]->state = CHECKING_AVAILABLE;
+                players[i]->hasBall = true;
+            }
+            if(si->anyAllyNextToBall()){
+                players[i]->state = PROTECTING_BALL;
+            }
+
+        }
+        if(players[i]->state == CHECKING_AVAILABLE){
+            if(si->isPathBlocked(players[i]->getPosition(), players[0]->getPosition(), {players[i]->getPlayerId(), players[0]->getPlayerId()}) == false){
+                this->available = players[0];
+            }
+            else if(si->isPathBlocked(players[i]->getPosition(), players[1]->getPosition(), {players[i]->getPlayerId(), players[1]->getPlayerId()}) == false){
+                this->available = players[1];
+            }
+            else{
+                this->available = players[0];
+            }
+            players[i]->state = PASSING_BALL_5;
+        }
+        if(players[i]->state == PASSING_BALL_5){
+            si->passBall(players[i], this->available);
+            if(players[i]->hasBall == false){
+                players[i]->state = PROTECTING_BALL;
+                this->available = NULL;
+            }
+        }
+
+
+
     }
 
 

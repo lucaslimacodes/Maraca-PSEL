@@ -22,6 +22,10 @@
 #define KICKING_BALL_CENTER 805
 #define KICKING_BALL_LEFT 806
 #define KICKING_BALL_RIGHT 807
+#define PROTECTING_BALL 808
+#define ADVANCING_TO_BALL 809
+#define PASSING_BALL_5 810
+#define CHECKING_AVAILABLE 811
 class att_behavior : public QObject
 {
     Q_OBJECT
@@ -32,7 +36,10 @@ public:
     SharedInfos *si;
     QVector2D below_att_pos;
     QVector2D above_att_pos;
+    Player *available;
     void predictBall(int id);
+    void protectBall(int id);
+    bool isPlayerNextToBall(int id);
     void run();
 };
 
