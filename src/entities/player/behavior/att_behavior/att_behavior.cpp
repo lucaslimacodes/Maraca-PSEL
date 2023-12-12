@@ -168,7 +168,7 @@ void att_behavior::run(){
                 players[i]->state = CHECKING_AVAILABLE;
                 players[i]->hasBall = true;
             }
-            if(si->anyAllyNextToBall()){
+            if(si->anyEnemyNextToBall()){
                 players[i]->state = PROTECTING_BALL;
             }
 
