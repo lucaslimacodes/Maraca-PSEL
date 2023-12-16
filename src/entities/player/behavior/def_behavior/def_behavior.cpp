@@ -18,7 +18,8 @@ void def_behavior::predictBall(int id){
     if(angleSpeed < 0) angleSpeed +=M_PI*2;
     double teta = fabs(angleBtP - angleSpeed);
     QVector2D p = si->getBallSpeed()/cos(teta) * fabs(ballToPlayer.length())/fabs(si->getBallSpeed().length()) - ballToPlayer;
-    players[id]->goTo(players[id]->getPosition() + p);
+
+    if(fabs(si->getBallSpeed().length()) >= 1.5) players[id]->goTo(players[id]->getPosition() + p);
 }
 void def_behavior::helpGoal(){
     QVector2D centerToGk = si->PlayersData[si->ourTeamColor][0][0] - getGoalCircleCenter();

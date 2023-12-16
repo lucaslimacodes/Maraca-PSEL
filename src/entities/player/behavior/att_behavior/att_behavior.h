@@ -26,6 +26,7 @@
 #define ADVANCING_TO_BALL 809
 #define PASSING_BALL_5 810
 #define CHECKING_AVAILABLE 811
+
 class att_behavior : public QObject
 {
     Q_OBJECT

@@ -13,8 +13,9 @@ bool SharedInfos::anyEnemyNextToBall(){
     return false;
 }
 
-bool SharedInfos::anyAllyNextToBall(){
+bool SharedInfos::anyAllyNextToBall(int ignore){
     for(int i=0;i<6;i++){
+        if(i==ignore) continue;
         if(fabs((PlayersData[ourTeamColor][i][0] - map->ballPosition()).length()) <= 0.18){
             return true;
         }
@@ -64,8 +65,8 @@ void SharedInfos::passBall(Player *p_start, Player *p_end){
         }
         else{
             if(isPathBlocked(p_start->getPosition(), p_end->getPosition(), {p_start->getPlayerId(), p_end->getPlayerId()}) == true)
-                p_start->kick(2+dist*0.85, true);
-            else p_start->kick(2+dist*1.0, false);
+                p_start->kick(2+dist*0.80, true);
+            else p_start->kick(2+dist*0.9, false);
             p_start->hasBall = false;
             p_end->isReceiver = true;
         }

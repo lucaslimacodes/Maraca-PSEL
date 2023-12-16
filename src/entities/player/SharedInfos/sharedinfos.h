@@ -29,7 +29,7 @@ public:
     int ourTeamColor;
     QVector2D getBallSpeed();
     bool anyEnemyNextToBall();
-    bool anyAllyNextToBall();
+    bool anyAllyNextToBall(int ignore);
     bool isPathBlocked(QVector2D start, QVector2D end, QVector<quint8> ignore);
     void passBall(Player *p_start, Player *p_end);
     void kickBall(Player *p, QVector2D target);

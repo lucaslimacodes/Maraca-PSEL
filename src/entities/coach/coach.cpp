@@ -123,7 +123,7 @@ WorldMap* Coach::getWorldMap() {
 void Coach::runCoach() {
     updateDataToSharedInfos(); //MANDATORY
 
-
+    std::cout << ab->players[2]->state << '\n';
 
     //all behavior running
     ab->run();

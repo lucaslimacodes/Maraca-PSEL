@@ -40,7 +40,7 @@ void att_behavior::protectBall(int id){
 }
 
 bool att_behavior::isPlayerNextToBall(int id){
-    if(fabs((players[id]->getPosition() - si->map->ballPosition()).length()) < 0.18) return true;
+    if(fabs((players[id]->getPosition() - si->map->ballPosition()).length()) < 0.15) return true;
     else return false;
 }
 void att_behavior::run(){
@@ -128,25 +128,45 @@ void att_behavior::run(){
             players[i]->sendPacket(0,0);
             players[i]->timeWaiting++;
             si->kickBall(players[i], si->map->theirGoalCenter());
-            if(players[i]->hasBall == false) players[i]->state = WAITING_FOR_BALL;
+            if(players[i]->hasBall == false) {
+                players[i]->state = WAITING_FOR_BALL;
+                if(i==2){
+                    players[i]->state = PROTECTING_BALL;
+                    players[i]->timeWaiting = 0;
+                    this->available = NULL;
+                }
+            }
         }
         if(players[i]->state == KICKING_BALL_LEFT){
             players[i]->sendPacket(0,0);
             players[i]->timeWaiting++;
             si->kickBall(players[i], si->map->theirGoalLeftPost());
-            if(players[i]->hasBall == false) players[i]->state = WAITING_FOR_BALL;
+            if(players[i]->hasBall == false) {
+                players[i]->state = WAITING_FOR_BALL;
+                if(i==2){
+                    players[i]->state = PROTECTING_BALL;
+                    players[i]->timeWaiting = 0;
+                    this->available = NULL;
+                }
+            }
         }
         if(players[i]->state == KICKING_BALL_RIGHT){
             players[i]->sendPacket(0,0);
             players[i]->timeWaiting++;
             si->kickBall(players[i], si->map->theirGoalRightPost());
-            if(players[i]->hasBall == false) players[i]->state = WAITING_FOR_BALL;
-
+            if(players[i]->hasBall == false) {
+                players[i]->state = WAITING_FOR_BALL;
+                if(i==2){
+                    players[i]->state = PROTECTING_BALL;
+                    players[i]->timeWaiting = 0;
+                    this->available = NULL;
+                }
+            }
         }
         if(players[i]->state == PROTECTING_BALL){
             protectBall(i);
             players[i]->rotateTo(si->map->ballPosition());
-            if(si->anyEnemyNextToBall() == false){
+            if(si->anyEnemyNextToBall() == false && si->anyAllyNextToBall(players[i]->getPlayerId()) == false){
                 players[i]->state = ADVANCING_TO_BALL;
             }
             if(si->ourTeamColor == YELLOW){
@@ -162,18 +182,52 @@ void att_behavior::run(){
 
         }
         if(players[i]->state == ADVANCING_TO_BALL){
-            players[i]->goTo(si->map->ballPosition() + (si->map->ballPosition() - players[i]->getPosition())/2);
+            if(fabs((players[i]->getPosition() - si->map->ballPosition()).length()) < 0.20)players[i]->timeWaiting++;
+            players[i]->goTo(si->map->ballPosition());
             players[i]->rotateTo(si->map->ballPosition());
-            if(isPlayerNextToBall(i) && si->anyEnemyNextToBall() == false){
+            if(isPlayerNextToBall(i) && si->anyEnemyNextToBall() == false && players[i]->timeWaiting > 20){
                 players[i]->state = CHECKING_AVAILABLE;
+                players[i]->timeWaiting = 0;
                 players[i]->hasBall = true;
             }
-            if(si->anyEnemyNextToBall()){
+            if(si->anyEnemyNextToBall() || si->anyAllyNextToBall(players[i]->getPlayerId())){
                 players[i]->state = PROTECTING_BALL;
             }
 
         }
         if(players[i]->state == CHECKING_AVAILABLE){
+            if(si->ourTeamColor == YELLOW){
+                if(players[i]->getPosition().x() < 0){
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalCenter(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_CENTER;
+                        players[i]->timeWaiting = 0;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalLeftPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_LEFT;
+                        players[i]->timeWaiting = 0;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalRightPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_RIGHT;
+                        players[i]->timeWaiting = 0;
+                    }
+                }
+            }
+            else{
+                if(players[i]->getPosition().x()>0){
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalCenter(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_CENTER;
+                        players[i]->timeWaiting = 0;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalLeftPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_LEFT;
+                        players[i]->timeWaiting = 0;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalRightPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_RIGHT;
+                        players[i]->timeWaiting = 0;
+                    }
+                }
+            }
             if(si->isPathBlocked(players[i]->getPosition(), players[0]->getPosition(), {players[i]->getPlayerId(), players[0]->getPlayerId()}) == false){
                 this->available = players[0];
             }
@@ -184,6 +238,44 @@ void att_behavior::run(){
                 this->available = players[0];
             }
             players[i]->state = PASSING_BALL_5;
+            if(si->ourTeamColor == YELLOW){
+                if(players[i]->getPosition().x() < 0){
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalCenter(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_CENTER;
+                        players[i]->timeWaiting = 0;
+                        this->available = NULL;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalLeftPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_LEFT;
+                        players[i]->timeWaiting = 0;
+                        this->available = NULL;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalRightPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_RIGHT;
+                        players[i]->timeWaiting = 0;
+                        this->available = NULL;
+                    }
+                }
+            }
+            else{
+                if(players[i]->getPosition().x()>0){
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalCenter(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_CENTER;
+                        players[i]->timeWaiting = 0;
+                        this->available = NULL;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalLeftPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_LEFT;
+                        players[i]->timeWaiting = 0;
+                        this->available = NULL;
+                    }
+                    if(si->isPathBlocked(si->map->ballPosition(), si->map->theirGoalRightPost(), {players[i]->getPlayerId()}) == false){
+                        players[i]->state = KICKING_BALL_RIGHT;
+                        players[i]->timeWaiting = 0;
+                        this->available = NULL;
+                    }
+                }
+            }
         }
         if(players[i]->state == PASSING_BALL_5){
             si->passBall(players[i], this->available);
@@ -192,6 +284,7 @@ void att_behavior::run(){
                 this->available = NULL;
             }
         }
+
 
 
 
