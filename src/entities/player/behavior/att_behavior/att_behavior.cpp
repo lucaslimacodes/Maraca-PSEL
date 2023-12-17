@@ -175,14 +175,14 @@ void att_behavior::run(){
                 }
             }
             else{
-                if(si->map->ballPosition().x() < 2.5){
+                if(si->map->ballPosition().x() < -2.5){
                     players[i]->state = ADVANCING_TO_BALL;
                 }
             }
 
         }
         if(players[i]->state == ADVANCING_TO_BALL){
-            if(fabs((players[i]->getPosition() - si->map->ballPosition()).length()) < 0.20)players[i]->timeWaiting++;
+            if(fabs((players[i]->getPosition() - si->map->ballPosition()).length()) < 0.17)players[i]->timeWaiting++;
             players[i]->goTo(si->map->ballPosition());
             players[i]->rotateTo(si->map->ballPosition());
             if(isPlayerNextToBall(i) && si->anyEnemyNextToBall() == false && players[i]->timeWaiting > 20){
